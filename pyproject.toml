@@ -1,0 +1,39 @@
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = []
+test = [
+    "pytest>=7.3.0",
+    "pytest-cov>=4.0.0",
+]
+ide = [
+    "setuptools>=67.6.1",
+]
+
+[tool.pdm.scripts]
+hugginggpt = "python main.py"
+
+[project]
+name = "langchain-huggingGPT"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "camille-vanhoffelen", email = "camille-vanhoffelen@users.noreply.github.com"},
+]
+dependencies = [
+    "click>=8.1.3",
+    "python-dotenv>=1.0.0",
+    "langchain>=0.0.137",
+    "openai>=0.27.4",
+    "huggingface-hub>=0.13.4",
+    "tiktoken>=0.3.3",
+    "diffusers>=0.15.1",
+    "Pillow>=9.5.0",
+    "pydub>=0.25.1",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

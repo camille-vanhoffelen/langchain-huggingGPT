@@ -1,0 +1,26 @@
+version = 1
+
+disable_existing_loggers = false
+
+[root]
+level = "DEBUG"
+handlers = ["debug_file", "errors_file"]
+
+[formatters.simple]
+format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+[handlers.debug_file]
+class = "logging.handlers.TimedRotatingFileHandler"
+level = "DEBUG"
+formatter = "simple"
+filename = "logs/debug.log"
+when = "midnight"
+encoding = "utf8"
+
+[handlers.errors_file]
+class = "logging.handlers.TimedRotatingFileHandler"
+level = "ERROR"
+formatter = "simple"
+filename = "logs/errors.log"
+when = "midnight"
+encoding = "utf8"

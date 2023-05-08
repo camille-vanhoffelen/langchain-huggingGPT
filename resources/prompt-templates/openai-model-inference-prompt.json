@@ -1,0 +1,9 @@
+{
+  "_type": "prompt",
+  "input_variables": [
+    "task",
+    "task_name",
+    "args"
+  ],
+  "template": "Model Inference Stage: the AI assistant needs to execute a task for the user.\n<im_start>user\nHere is the task in JSON format {task}. Now you are a {task_name} system, the arguments are {args}. Just help me do {task_name} and give me the result. The result must be in text form without any urls.<im_end>\n<im_start>assistant"
+}

@@ -1,0 +1,8 @@
+{
+  "_type": "prompt",
+  "input_variables": [
+    "user_input",
+    "results"
+  ],
+  "template": "#4 Response Generation Stage: With the task execution logs, the AI assistant needs to describe the process and inference results.\n<im_start>user\n{user_input}<im_end>\n<im_start>assistant\nBefore give you a response, I want to introduce my workflow for your request, which is shown in the following JSON data: {results}. Do you have any demands regarding my response?<im_end>\n<im_start>user\nYes. Please first think carefully and directly answer my request based on the inference results. Some of the inferences may not always turn out to be correct and require you to make careful consideration in making decisions. Then please detail your workflow including the used models and inference results for my request in your friendly tone. Please filter out information that is not relevant to my request. Tell me the complete path or urls of files in inference results. If there is nothing in the results, please tell me you can't make it.<im_end>\n<im_start>assistant"
+}
