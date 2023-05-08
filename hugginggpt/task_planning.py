@@ -5,8 +5,8 @@ from langchain.prompts import load_prompt
 
 from hugginggpt.exceptions import TaskPlanningException, wrap_exceptions
 from hugginggpt.history import ConversationHistory
-from hugginggpt.task_parsing import parse_tasks
 from hugginggpt.resources import get_prompt_resource
+from hugginggpt.task_parsing import parse_tasks
 
 logger = logging.getLogger(__name__)
 

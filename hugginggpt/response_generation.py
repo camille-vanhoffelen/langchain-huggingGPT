@@ -5,8 +5,8 @@ from langchain import LLMChain
 from langchain.prompts import load_prompt
 
 from hugginggpt.exceptions import ResponseGenerationException, wrap_exceptions
-from hugginggpt.task_parsing import TaskSummary
 from hugginggpt.resources import get_prompt_resource
+from hugginggpt.task_parsing import TaskSummary
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,9 @@ def generate_response(user_input: str, task_summaries: dict[int, TaskSummary], l
     sorted_task_summaries = sort_values(task_summaries)
     results = [ts.dict() for ts in sorted_task_summaries]
     results_str = json.dumps(results)
-    prompt_template = load_prompt(get_prompt_resource("response-generation-prompt.json"))
+    prompt_template = load_prompt(
+        get_prompt_resource("response-generation-prompt.json")
+    )
     llm_chain = LLMChain(prompt=prompt_template, llm=llm)
     response = llm_chain.predict(
         user_input=user_input, results=results_str, stop=["<im_end>"]

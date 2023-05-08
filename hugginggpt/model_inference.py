@@ -15,8 +15,8 @@ from pydub import AudioSegment
 
 from hugginggpt.exceptions import ModelInferenceException, wrap_exceptions
 from hugginggpt.model_factory import TEXT_DAVINCI_003
-from hugginggpt.task_parsing import Task
 from hugginggpt.resources import get_prompt_resource
+from hugginggpt.task_parsing import Task
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,9 @@ def infer(task: Task, model_id: str):
 
 def infer_openai(task: Task):
     logger.info("Starting OpenAI inference")
-    prompt_template = load_prompt(get_prompt_resource("openai-model-inference-prompt.json"))
+    prompt_template = load_prompt(
+        get_prompt_resource("openai-model-inference-prompt.json")
+    )
     # TODO instantiate LLM somewhere else
     llm = OpenAI(model_name=TEXT_DAVINCI_003, temperature=0)
     llm_chain = LLMChain(prompt=prompt_template, llm=llm)
