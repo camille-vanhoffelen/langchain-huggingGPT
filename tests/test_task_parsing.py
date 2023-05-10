@@ -1,6 +1,7 @@
 import pytest
 
-from hugginggpt.task_parsing import GENERATED_RESOURCES_DIR, GENERATED_TOKEN, Task, parse_tasks
+from hugginggpt.task_parsing import GENERATED_TOKEN, Task, TaskSummary, parse_tasks
+from hugginggpt.model_selection import Model
 
 
 def test_parse_tasks(tasks_str):
@@ -27,14 +28,14 @@ def test_depends_on_generated_resources(dependent_task):
     assert dependent_task.depends_on_generated_resources()
 
 
-def test_replace_generated_resources(dependent_task, outputs):
-    dependent_task.replace_generated_resources(outputs)
-    assert dependent_task.args["image"] == GENERATED_RESOURCES_DIR + "/images/007.png"
+def test_replace_generated_resources(dependent_task, task_summaries):
+    dependent_task.replace_generated_resources(task_summaries)
+    assert dependent_task.args["image"] == "/images/007.png"
 
 
-def test_do_not_replace_generated_resources(task, outputs):
+def test_do_not_replace_generated_resources(task, task_summaries):
     original_args = task.args.copy()
-    task.replace_generated_resources(outputs)
+    task.replace_generated_resources(task_summaries)
     assert task.args == original_args
 
 
@@ -67,7 +68,10 @@ def dependent_task():
         args={"image": f"{GENERATED_TOKEN}-0"},
     )
 
+@pytest.fixture
+def model():
+    return Model(id="great-model", reason="no particular reason")
 
 @pytest.fixture
-def outputs():
-    return {0: {"inference result": {"generated image": "/images/007.png"}}}
+def task_summaries(dependent_task, model):
+    return {0: TaskSummary(task=dependent_task, inference_result={"generated image": "/images/007.png"}, model=model)}

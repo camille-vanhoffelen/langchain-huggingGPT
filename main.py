@@ -90,7 +90,8 @@ def _compute(user_input: str, models: LLMs, history: ConversationHistory | None 
             user_input=user_input,
             task=task,
             top_k_models=top_k_models,
-            llm=models.model_selection_llm,
+            model_selection_llm=models.model_selection_llm,
+            output_fixing_llm=models.output_fixing_llm
         )
         inference_result = infer(task=task, model_id=model.id)
         task_summaries[task.id] = TaskSummary(

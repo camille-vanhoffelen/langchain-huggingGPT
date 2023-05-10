@@ -8,6 +8,7 @@ from langchain.prompts import load_prompt
 from hugginggpt.model_selection import Model, select_model
 from hugginggpt.task_parsing import Task
 from hugginggpt.resources import get_prompt_resource
+from hugginggpt.exceptions import ModelSelectionException
 
 load_dotenv()
 
@@ -20,9 +21,18 @@ def test_model_selection_prompt(model_selection_prompt, user_input, task, models
     assert prompt == model_selection_prompt
 
 
-def test_select_model(user_input, task, models, llm, expected_model):
-    model = select_model(user_input, task, models, llm)
+def test_select_model(user_input, task, models, model_selection_llm, output_fixing_llm, expected_model):
+    model = select_model(user_input, task, models, model_selection_llm, output_fixing_llm)
     assert model == expected_model
+
+
+def test_output_fixing(user_input, task, models, faulty_model_selection_llm, output_fixing_llm, expected_model):
+    model = select_model(user_input, task, models, faulty_model_selection_llm, output_fixing_llm)
+    assert model == expected_model
+
+def test_faulty_output_fixing(user_input, task, models, faulty_model_selection_llm, faulty_output_fixing_llm, expected_model):
+    with pytest.raises(ModelSelectionException):
+        select_model(user_input, task, models, faulty_model_selection_llm, faulty_output_fixing_llm)
 
 
 @pytest.fixture
@@ -36,13 +46,36 @@ def reason():
 
 
 @pytest.fixture
-def response(id, reason):
+def model_selection_response(id, reason):
     return f'{{"id": "{id}", "reason": "{reason}"}}'
 
 
 @pytest.fixture
-def llm(response):
-    llm = FakeListLLM(responses=[response])
+def model_selection_llm(model_selection_response):
+    llm = FakeListLLM(responses=[model_selection_response])
+    return llm
+
+
+@pytest.fixture
+def output_fixing_llm(model_selection_response):
+    llm = FakeListLLM(responses=[model_selection_response])
+    return llm
+
+
+@pytest.fixture
+def faulty_model_selection_response(id, reason):
+    return f'{{"id": "{id}", "reason": "{reason} and also here are some random quotes that will mess up your json: "mouhahahah""}}'
+
+
+@pytest.fixture
+def faulty_model_selection_llm(faulty_model_selection_response):
+    llm = FakeListLLM(responses=[faulty_model_selection_response])
+    return llm
+
+
+@pytest.fixture
+def faulty_output_fixing_llm(faulty_model_selection_response):
+    llm = FakeListLLM(responses=[faulty_model_selection_response])
     return llm
 
 

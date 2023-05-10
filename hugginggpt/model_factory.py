@@ -17,7 +17,7 @@ MODEL_CHOICES = [TEXT_DAVINCI_003, FAKE_LLM]
 logger = logging.getLogger(__name__)
 
 LLMs = namedtuple(
-    "LLMs", ["task_planning_llm", "model_selection_llm", "response_generation_llm"]
+    "LLMs", ["task_planning_llm", "model_selection_llm", "response_generation_llm", "output_fixing_llm"]
 )
 
 
@@ -39,10 +39,12 @@ def create_llms(llm_type: str):
             logit_bias={token_id: 5 for token_id in choose_model_highlight_ids},
         )
         response_generation_llm = OpenAI(model_name=TEXT_DAVINCI_003, temperature=0)
+        output_fixing_llm = OpenAI(model_name=TEXT_DAVINCI_003, temperature=0)
         return LLMs(
             task_planning_llm=task_planning_llm,
             model_selection_llm=model_selection_llm,
             response_generation_llm=response_generation_llm,
+            output_fixing_llm=output_fixing_llm
         )
 
     if llm_type == FAKE_LLM:
@@ -59,8 +61,11 @@ def create_llms(llm_type: str):
             "I understand your request. Based on the inference results, I have generated an image of a sheep for you. The image is located at the following URL: /images/1b5e.png. I used the model runwayml/stable-diffusion-v1-5 to generate the image. This model has the most potential to solve the user request as it has the highest number of likes (6367) and the most detailed description, which suggests that it has the most potential to solve the user request. I hope this image meets your expectations. Is there anything else I can help you with?"
         ]
         response_generation_llm = FakeListLLM(responses=responses)
+        responses = ['{"output": "fixed"}']
+        output_fixing_llm = FakeListLLM(responses=responses)
         return LLMs(
             task_planning_llm=task_planning_llm,
             model_selection_llm=model_selection_llm,
             response_generation_llm=response_generation_llm,
+            output_fixing_llm=output_fixing_llm
         )
