@@ -4,27 +4,22 @@ Implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain
 
 ## Getting Started
 
-### Install with pdm
-
-```commandline
-pdm install
-```
-
-### Install with pip
+### Installation
 
 ```commandline
 pip install -r requirements.txt
 ```
 
+or with your preferred virtual environment manager. 
+This project uses [pdm](https://pdm.fming.dev/) for dependency management.
+
+
+### OpenAI & Huggingface Hub Credentials
+
+TODO
+
 ## Usage
 
-Run application with pdm:
-
-```commandline
-pdm run hugginggpt
-```
-
-Or run application directly in your virtual environment of choice:
 
 ```commandline
 python main.py
@@ -43,7 +38,21 @@ Now count the number of chairs in the image
 To use the application in standalone mode, use the `--prompt` flag:
 
 ```commandline
-pdm run hugginggpt --prompt "Generate an image of a classroom"
+python main.py --prompt "Generate an image of a classroom"
+```
+
+## Examples
+
+TODO
+
+## Development
+
+### Testing
+
+Run tests with pytest:
+
+```commandline
+pytest
 ```
 
 ## Credits
