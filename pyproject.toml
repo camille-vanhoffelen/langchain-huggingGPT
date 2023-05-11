@@ -1,8 +1,6 @@
 [tool.pdm]
 [tool.pdm.dev-dependencies]
-dev = [
-    "-e file://${PROJECT_ROOT}/hugginggpt#egg=hugginggpt",
-]
+dev = []
 test = [
     "pytest>=7.3.0",
     "pytest-cov>=4.0.0",

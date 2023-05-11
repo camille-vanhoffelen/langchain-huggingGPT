@@ -8,6 +8,7 @@ Implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain
 
 ```commandline
 pip install -r requirements.txt
+pip install -e .
 ```
 
 or with your preferred virtual environment manager. 
