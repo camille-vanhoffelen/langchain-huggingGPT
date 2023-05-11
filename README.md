@@ -4,20 +4,22 @@ Implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain
 
 ## Getting Started
 
-### Installation
+Install the package with pip:
 
 ```commandline
 pip install -r requirements.txt
 pip install -e .
 ```
 
-or with your preferred virtual environment manager. 
-This project uses [pdm](https://pdm.fming.dev/) for dependency management.
+or with your preferred virtual environment manager (_this project uses [pdm](https://pdm.fming.dev/) for dependency management_).
 
+Setup your OpenAI and Huggingface Hub credentials:
 
-### OpenAI & Huggingface Hub Credentials
+```commandline
+cp .env.example .env
+```
 
-TODO
+Then fill in the `.env` file with your credentials.
 
 ## Usage
 

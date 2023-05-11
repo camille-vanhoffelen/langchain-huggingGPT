@@ -176,3 +176,6 @@ output/audios/*
 
 # macos
 *.DS_Store
+
+# Examples
+!.env.example
