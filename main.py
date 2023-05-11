@@ -38,6 +38,7 @@ def main(prompt, llm_type):
 def standalone_mode(user_input: str, models: LLMs):
     try:
         response = _compute(user_input=user_input, models=models)
+        print(response)
         return response
     except Exception as e:
         logger.exception("")
@@ -51,7 +52,7 @@ def interactive_mode(models: LLMs):
     history = ConversationHistory()
     while True:
         try:
-            user_input = click.prompt("User: ")
+            user_input = click.prompt("User")
             if user_input.lower() == "exit":
                 break
 
@@ -112,7 +113,6 @@ def _compute(user_input: str, models: LLMs, history: ConversationHistory | None 
 def _print_banner():
     with open("resources/banner.txt", "r") as f:
         banner = f.read()
-        print(banner)
         logger.info("\n" + banner)
 
 
