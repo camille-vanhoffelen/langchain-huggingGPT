@@ -46,6 +46,9 @@ python main.py --prompt "Draw me a sheep"
 ## Examples
 
 TODO
+include example that using existing resource e.g /images/81d7.png
+include example that builds upon conversation
+include example that includes multimodal task planning
 
 ## Development
 

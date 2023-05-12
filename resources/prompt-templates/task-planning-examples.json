@@ -13,7 +13,7 @@
     },
     {
         "example_input": "Given an image /example.jpg, first generate a hed image, then based on the hed image generate a new image where a girl is reading a book",
-        "example_output": "[{{\"task\": \"openpose-control\", \"id\": 0, \"dep\": [-1], \"args\": {{\"image\": \"/example.jpg\" }}}},  {{\"task\": \"openpose-text-to-image\", \"id\": 1, \"dep\": [0], \"args\": {{\"text\": \"a girl is reading a book\", \"image\": \"<GENERATED>-0\" }}}}]"
+        "example_output": "[{{\"task\": \"image-to-image\", \"id\": 0, \"dep\": [-1], \"args\": {{\"image\": \"/example.jpg\" }}}},  {{\"task\": \"image-to-image\", \"id\": 1, \"dep\": [0], \"args\": {{\"text\": \"a girl is reading a book\", \"image\": \"<GENERATED>-0\" }}}}]"
     },
     {
         "example_input": "please show me a video and an image of (based on the text) 'a boy is running' and dub it",
@@ -22,5 +22,17 @@
     {
         "example_input": "please show me a joke and an image of cat",
         "example_output": "[{{\"task\": \"conversational\", \"id\": 0, \"dep\": [-1], \"args\": {{\"text\": \"please show me a joke of cat\" }}}}, {{\"task\": \"text-to-image\", \"id\": 1, \"dep\": [-1], \"args\": {{\"text\": \"a photo of cat\" }}}}]"
+    },
+    {
+        "example_input": "Please tell me how similar the two following sentences are: I like to surf. Surfing is my passion.",
+        "example_output": "[{{\"task\": \"sentence-similarity\", \"id\": 0, \"dep\": [-1], \"args\": {{\"text1\": \"I like to surf.\", \"text2\": \"Surfing is my passion.\"}}}}]"
+    },
+    {
+        "example_input": "Please tell me if the following sentence is positive or negative: Surfing is the best!",
+        "example_output": "[{{\"task\": \"text-classification\", \"id\": 0, \"dep\": [-1], \"args\": {{\"text\": \"Surfing is the best!\"}}}}]"
+    },
+    {
+        "example_input": "Classify the image found at /images/de78.png.",
+        "example_output": "[{{\"task\": \"image-classification\", \"id\": 0, \"dep\": [-1], \"args\": {{\"image\": \"/images/de78.png\"}}}}]"
     }
 ]

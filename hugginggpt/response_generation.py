@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @wrap_exceptions(ResponseGenerationException, "Failed to generate assistant response")
-def generate_response(user_input: str, task_summaries: dict[int, TaskSummary], llm):
+def generate_response(user_input: str, task_summaries, llm):
     logger.info("Starting response generation")
     # TODO find better name than results
     sorted_task_summaries = sort_values(task_summaries)

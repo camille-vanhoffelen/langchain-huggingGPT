@@ -1,3 +1,4 @@
+import json
 import logging
 
 import click
@@ -6,7 +7,7 @@ from dotenv import load_dotenv
 from hugginggpt import generate_response, infer, plan_tasks, select_model
 from hugginggpt.history import ConversationHistory
 from hugginggpt.log import setup_logging
-from hugginggpt.model_factory import MODEL_CHOICES, TEXT_DAVINCI_003, create_llms, LLMs
+from hugginggpt.model_factory import LLMs, MODEL_CHOICES, TEXT_DAVINCI_003, create_llms
 from hugginggpt.model_scraper import get_top_k_models
 from hugginggpt.task_parsing import TaskSummary
 
@@ -38,7 +39,7 @@ def main(prompt, llm_type):
 def standalone_mode(user_input: str, models: LLMs):
     try:
         response = _compute(user_input=user_input, models=models)
-        print(response)
+        print(response.strip())
         return response
     except Exception as e:
         logger.exception("")
@@ -96,7 +97,7 @@ def _compute(user_input: str, models: LLMs, history: ConversationHistory | None 
         )
         inference_result = infer(task=task, model_id=model.id)
         task_summaries[task.id] = TaskSummary(
-            task=task, model=model, inference_result=inference_result
+            task=task, model=model, inference_result=json.dumps(inference_result)
         )
         logger.info(f"Finished task: {task}")
     logger.info("Finished all tasks")

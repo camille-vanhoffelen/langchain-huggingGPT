@@ -64,6 +64,8 @@ def filter_available_models(candidates):
 def check_huggingface_model_status(model_id):
     url = f"https://api-inference.huggingface.co/status/{model_id}"
     r = requests.get(url, headers=HUGGINGFACE_HEADERS)
+    # TODO remove
+    logger.debug("Model status response: %s", r.json())
     return (model_id, True) if model_is_available(r) else (model_id, False)
 
 

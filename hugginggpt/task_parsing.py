@@ -1,8 +1,8 @@
 import copy
 import logging
-from typing import Any
+from typing import Any, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, Json
 
 from hugginggpt.exceptions import TaskParsingException, wrap_exceptions
 from hugginggpt.model_selection import Model
@@ -135,5 +135,5 @@ def unfold(tasks):
 
 class TaskSummary(BaseModel):
     task: Task
-    inference_result: dict[str, Any]
+    inference_result: Json[Any]
     model: Model
