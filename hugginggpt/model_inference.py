@@ -1,23 +1,20 @@
 import base64
-import io
 import json
 import logging
 import os
 import random
-import uuid
 from io import BytesIO
 
 import requests
 from PIL import Image, ImageDraw
-from diffusers.utils.testing_utils import load_image
 from dotenv import load_dotenv
 from langchain import LLMChain, OpenAI
 from langchain.prompts import load_prompt
-from pydub import AudioSegment
 
 from hugginggpt.exceptions import ModelInferenceException, wrap_exceptions
 from hugginggpt.model_factory import TEXT_DAVINCI_003
-from hugginggpt.resources import get_prompt_resource
+from hugginggpt.resources import audio_from_bytes, encode_audio, encode_image, get_prompt_resource, get_resource_url, \
+    image_from_bytes, load_image, save_audio, save_image
 from hugginggpt.task_parsing import Task
 
 logger = logging.getLogger(__name__)
@@ -26,7 +23,6 @@ load_dotenv()
 HUGGINGFACE_TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN")
 HUGGINGFACE_HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 HUGGINGFACE_INFERENCE_API_URL = "https://api-inference.huggingface.co/models/"
-GENERATED_RESOURCES_DIR = "output"
 
 
 @wrap_exceptions(ModelInferenceException, "Error during model inference")
@@ -59,10 +55,8 @@ def infer_huggingface(task: Task, model_id: str):
     url = HUGGINGFACE_INFERENCE_API_URL + model_id
     huggingface_task = create_huggingface_task(task=task)
     data = huggingface_task.inference_inputs
-    # TODO remove this
-    # logger.debug(f"Huggingface inference payload: {data}")
     response = requests.post(url, headers=HUGGINGFACE_HEADERS, data=data)
-    logger.debug(f"Huggingface inference response: {response}")
+    logger.debug(f"Huggingface inference response: {response.json()}")
     response.raise_for_status()
     result = huggingface_task.parse_response(response)
     logger.debug(f"Inference result: {result}")
@@ -185,7 +179,7 @@ class TextToImage:
         return self.task.args["text"]
 
     def parse_response(self, response):
-        image = Image.open(io.BytesIO(response.content))
+        image = image_from_bytes(response.content)
         image_name = save_image(image)
         return {"generated image": f"/images/{image_name}.png"}
 
@@ -199,9 +193,8 @@ class ImageSegmentation:
         return encode_image(self.task.args["image"])
 
     def parse_response(self, response):
-        img_url = get_resource_url(self.task.args["image"])
-        img_data = image_to_bytes(img_url)
-        image = Image.open(BytesIO(img_data))
+        image_url = get_resource_url(self.task.args["image"])
+        image = load_image(image_url)
         colors = []
         for i in range(len(response.json())):
             colors.append(
@@ -239,7 +232,7 @@ class ImageToImage:
         return encode_image(self.task.args["image"])
 
     def parse_response(self, response):
-        image = Image.open(io.BytesIO(response.content))
+        image = image_from_bytes(response.content)
         image_name = save_image(image)
         return {"generated image": f"/images/{image_name}.png"}
 
@@ -253,9 +246,8 @@ class ObjectDetection:
         return encode_image(self.task.args["image"])
 
     def parse_response(self, response):
-        img_url = get_resource_url(self.task.args["image"])
-        img_data = image_to_bytes(img_url)
-        image = Image.open(BytesIO(img_data))
+        image_url = get_resource_url(self.task.args["image"])
+        image = load_image(image_url)
         draw = ImageDraw.Draw(image)
         labels = list(item["label"] for item in response.json())
         color_map = {}
@@ -325,7 +317,8 @@ class TextToSpeech:
         return self.task.args["text"]
 
     def parse_response(self, response):
-        audio_name = save_audio(response.content)
+        audio = audio_from_bytes(response.content)
+        audio_name = save_audio(audio)
         return {"generated audio": f"/audios/{audio_name}.flac"}
 
 
@@ -335,16 +328,14 @@ class AudioToAudio:
 
     @property
     def inference_inputs(self):
-        return {"inputs": {"audio": encode_audio(self.task.args["audio"])}}
+        return encode_audio(self.task.args["audio"])
 
     def parse_response(self, response):
         result = response.json()
         blob = result[0].items()["blob"]
         content = base64.b64decode(blob.encode("utf-8"))
-        # TODO can this just be saved like for text to speech?
-        audio = AudioSegment.from_file(BytesIO(content))
-        name = str(uuid.uuid4())[:4]
-        audio.export(f"{GENERATED_RESOURCES_DIR}/audios/{name}.flac", format="flac")
+        audio = audio_from_bytes(content)
+        name = save_audio(audio)
         return {"generated audio": f"/audios/{name}.flac"}
 
 
@@ -355,7 +346,6 @@ class AutomaticSpeechRecognition:
     @property
     def inference_inputs(self):
         return encode_audio(self.task.args["audio"])
-        # return {"inputs": {"audio": encode_audio(self.task.args["audio"])}}
 
     def parse_response(self, response):
         return response.json()
@@ -367,7 +357,7 @@ class AudioClassification:
 
     @property
     def inference_inputs(self):
-        return {"inputs": {"audio": encode_audio(self.task.args["audio"])}}
+        return encode_audio(self.task.args["audio"])
 
     def parse_response(self, response):
         return response.json()
@@ -398,45 +388,3 @@ def create_huggingface_task(task: Task):
         return HUGGINGFACE_TASKS[task.task](task)
     else:
         raise NotImplementedError(f"Task {task.task} not supported")
-
-
-def get_resource_url(resource_arg):
-    if resource_arg.startswith("http"):
-        return resource_arg
-    else:
-        return GENERATED_RESOURCES_DIR + resource_arg
-
-
-def image_to_bytes(img_url):
-    img_byte = BytesIO()
-    load_image(img_url).save(img_byte, format="png")
-    img_data = img_byte.getvalue()
-    return img_data
-
-
-def encode_image(image_arg):
-    img_url = get_resource_url(image_arg)
-    img_data = image_to_bytes(img_url)
-    return img_data
-
-
-def encode_audio(audio_arg):
-    audio_url = get_resource_url(audio_arg)
-    # TODO load both local and remote audio, like load_image() above
-    audio_data = requests.get(audio_url, timeout=10).content
-    return audio_data
-    # return base64.b64encode(audio_data).decode("utf-8")
-
-
-def save_image(img: Image):
-    name = str(uuid.uuid4())[:4]
-    path = f"{GENERATED_RESOURCES_DIR}/images/{name}.png"
-    img.save(path)
-    return name
-
-
-def save_audio(audio):
-    name = str(uuid.uuid4())[:4]
-    with open(f"{GENERATED_RESOURCES_DIR}/audios/{name}.flac", "wb") as f:
-        f.write(audio)
-    return name

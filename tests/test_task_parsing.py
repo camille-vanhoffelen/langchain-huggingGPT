@@ -1,7 +1,9 @@
+import json
+
 import pytest
 
-from hugginggpt.task_parsing import GENERATED_TOKEN, Task, TaskSummary, parse_tasks
 from hugginggpt.model_selection import Model
+from hugginggpt.task_parsing import GENERATED_TOKEN, Task, TaskSummary, parse_tasks
 
 
 def test_parse_tasks(tasks_str):
@@ -68,10 +70,17 @@ def dependent_task():
         args={"image": f"{GENERATED_TOKEN}-0"},
     )
 
+
 @pytest.fixture
 def model():
     return Model(id="great-model", reason="no particular reason")
 
+
 @pytest.fixture
-def task_summaries(dependent_task, model):
-    return {0: TaskSummary(task=dependent_task, inference_result={"generated image": "/images/007.png"}, model=model)}
+def inference_result():
+    return json.dumps({"generated image": "/images/007.png"})
+
+
+@pytest.fixture
+def task_summaries(dependent_task, inference_result, model):
+    return {0: TaskSummary(task=dependent_task, inference_result=inference_result, model=model)}
