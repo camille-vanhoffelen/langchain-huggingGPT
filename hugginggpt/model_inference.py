@@ -56,7 +56,6 @@ def infer_huggingface(task: Task, model_id: str):
     huggingface_task = create_huggingface_task(task=task)
     data = huggingface_task.inference_inputs
     response = requests.post(url, headers=HUGGINGFACE_HEADERS, data=data)
-    logger.debug(f"Huggingface inference response: {response.json()}")
     response.raise_for_status()
     result = huggingface_task.parse_response(response)
     logger.debug(f"Inference result: {result}")

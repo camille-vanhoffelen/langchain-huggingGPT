@@ -57,7 +57,9 @@ async def filter_available_models(candidates):
     async with ClientSession() as session:
         async with asyncio.TaskGroup() as tg:
             tasks = [tg.create_task(model_status(model_id=c["id"], session=session)) for c in candidates]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
+        available_model_ids = (model_id for model_id, status in results if status)
+        return [c for c in candidates if c["id"] in available_model_ids]
 
 
 async def model_status(model_id: str, session: ClientSession) -> tuple[str, bool]:
