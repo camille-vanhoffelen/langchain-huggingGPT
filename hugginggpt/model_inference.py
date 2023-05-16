@@ -63,20 +63,22 @@ def infer_huggingface(task: Task, model_id: str):
 
 
 # NLP Tasks
+
+# deepset/roberta-base-squad2 was removed from huggingface_models-metadata.jsonl because it is currently broken
+# Example added to task-planning-examples.json compared to original paper
 class QuestionAnswering:
     def __init__(self, task: Task):
         self.task = task
 
     @property
     def inference_inputs(self):
-        return {
+        data = {
             "inputs": {
-                "question": self.task.args["text"],
-                "context": (
-                    self.task.args["context"] if "context" in self.task.args else ""
-                ),
+                "question": self.task.args["question"],
+                "context": self.task.args["context"] if "context" in self.task.args else "",
             }
         }
+        return json.dumps(data)
 
     def parse_response(self, response):
         return response.json()

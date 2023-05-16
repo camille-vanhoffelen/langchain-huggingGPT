@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def read_huggingface_models_metadata():
-    with open("resources/huggingface_models_metadata.jsonl") as f:
+    with open("resources/huggingface-models-metadata.jsonl") as f:
         models = [json.loads(line) for line in f]
     models_map = defaultdict(list)
     for model in models:
@@ -58,17 +58,16 @@ async def filter_available_models(candidates):
         async with asyncio.TaskGroup() as tg:
             tasks = [tg.create_task(model_status(model_id=c["id"], session=session)) for c in candidates]
         results = await asyncio.gather(*tasks)
-        available_model_ids = (model_id for model_id, status in results if status)
+        available_model_ids = [model_id for model_id, status in results if status]
         return [c for c in candidates if c["id"] in available_model_ids]
 
 
 async def model_status(model_id: str, session: ClientSession) -> tuple[str, bool]:
     url = f"https://api-inference.huggingface.co/status/{model_id}"
     r = await session.get(url, headers=HUGGINGFACE_HEADERS)
-    # TODO remove
     status = r.status
     json_response = await r.json()
-    logger.debug("Model status response: %s", json_response)
+    logger.debug(f"Model {model_id} status: {status}, response: {json_response}")
     return (model_id, True) if model_is_available(status=status, json_response=json_response) else (model_id, False)
 
 

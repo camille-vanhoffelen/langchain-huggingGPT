@@ -34,5 +34,9 @@
     {
         "example_input": "Classify the image found at /images/de78.png.",
         "example_output": "[{{\"task\": \"image-classification\", \"id\": 0, \"dep\": [-1], \"args\": {{\"image\": \"/images/de78.png\"}}}}]"
+    },
+    {
+        "example_input": "Paris is the capital of France. Berlin is the capital of Germany. Based on the previous facts, answer the following question: What is the capital of France?",
+        "example_output": "[{{\"task\": \"question-answering\", \"id\": 0, \"dep\": [-1], \"args\": {{\"question\": \"What is the capital of France?\", \"context\": \"Paris is the capital of France. Berlin is the capital of Germany.\"}}}}]"
     }
 ]
