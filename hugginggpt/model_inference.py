@@ -223,14 +223,23 @@ class ImageSegmentation:
         }
 
 
+# Not yet implemented in huggingface inference API
 class ImageToImage:
     def __init__(self, task: Task):
         self.task = task
 
     @property
     def inference_inputs(self):
-        # TODO add optional text argument for control models
-        return encode_image(self.task.args["image"])
+        img_data = encode_image(self.task.args["image"])
+        img_base64 = base64.b64encode(img_data).decode("utf-8")
+        data = {
+            "inputs": {
+                "image": img_base64,
+            }
+        }
+        if "text" in self.task.args:
+            data["inputs"]["prompt"] = self.task.args["text"]
+        return json.dumps(data)
 
     def parse_response(self, response):
         image = image_from_bytes(response.content)

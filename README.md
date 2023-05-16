@@ -1,6 +1,11 @@
 # :parrot: :hugs: :robot: Langchain HuggingGPT
 
-Implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain](https://docs.langchain.com/docs/).
+A lightweight implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain](https://docs.langchain.com/docs/). 
+
+Functionality isn't complete, since only [huggingface inference API](https://huggingface.co/inference-api) models are used. Missing tasks:
+
+* `text-to-video`
+* Some `image-to-image` (e.g image to hed, image to canny)
 
 ## Getting Started
 
