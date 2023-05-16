@@ -1,11 +1,14 @@
+import time
+
 import pytest
+import asyncio
 
 from hugginggpt.model_scraper import HUGGINGFACE_MODELS_MAP, filter_available_models
 
 
 @pytest.mark.skip(reason="huggingfacehub API not yet mocked")
 def test_filter_available_models(candidates):
-    available_models = filter_available_models(candidates)
+    available_models = asyncio.run(filter_available_models(candidates=candidates))
 
 
 @pytest.fixture

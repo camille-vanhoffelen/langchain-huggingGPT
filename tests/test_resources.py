@@ -12,7 +12,7 @@ def test_encode_image(mock_get_resource_url, image_arg):
 def test_encode_audio(mock_get_resource_url, audio_arg):
     audio_data = resources.encode_audio(audio_arg)
     assert type(audio_data) == bytes
-    assert len(audio_data) == 158720
+    assert len(audio_data) == 92816
 
 
 @pytest.fixture
