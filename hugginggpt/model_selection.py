@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 async def select_hf_models(
     user_input: str,
-    tasks: Tasks,
+    tasks: list[Task],
     model_selection_llm: BaseLLM,
     output_fixing_llm: BaseLLM,
 ):

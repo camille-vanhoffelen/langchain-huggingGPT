@@ -21,14 +21,14 @@ async def test_select_model(
     output_fixing_llm,
     expected_model,
 ):
-    session = aiohttp.ClientSession()
-    task_id, model = await select_model(
-        user_input=user_input,
-        task=task,
-        model_selection_llm=model_selection_llm,
-        output_fixing_llm=output_fixing_llm,
-        session=session,
-    )
+    async with aiohttp.ClientSession() as session:
+        task_id, model = await select_model(
+            user_input=user_input,
+            task=task,
+            model_selection_llm=model_selection_llm,
+            output_fixing_llm=output_fixing_llm,
+            session=session,
+        )
     assert task_id == task.id
     assert model == expected_model
 
@@ -41,14 +41,14 @@ async def test_output_fixing(
     output_fixing_llm,
     expected_model,
 ):
-    session = aiohttp.ClientSession()
-    task_id, model = await select_model(
-        user_input=user_input,
-        task=task,
-        model_selection_llm=faulty_model_selection_llm,
-        output_fixing_llm=output_fixing_llm,
-        session=session,
-    )
+    async with aiohttp.ClientSession() as session:
+        task_id, model = await select_model(
+            user_input=user_input,
+            task=task,
+            model_selection_llm=faulty_model_selection_llm,
+            output_fixing_llm=output_fixing_llm,
+            session=session,
+        )
     assert task_id == task.id
     assert model == expected_model
 
@@ -62,14 +62,14 @@ async def test_faulty_output_fixing(
     expected_model,
 ):
     with pytest.raises(ModelSelectionException):
-        session = aiohttp.ClientSession()
-        await select_model(
-            user_input=user_input,
-            task=task,
-            model_selection_llm=faulty_model_selection_llm,
-            output_fixing_llm=faulty_output_fixing_llm,
-            session=session,
-        )
+        async with aiohttp.ClientSession() as session:
+            await select_model(
+                user_input=user_input,
+                task=task,
+                model_selection_llm=faulty_model_selection_llm,
+                output_fixing_llm=faulty_output_fixing_llm,
+                session=session,
+            )
 
 
 @pytest.fixture

@@ -27,7 +27,7 @@ class Task(BaseModel):
         )
 
     @wrap_exceptions(TaskParsingException, "Failed to replace generated resources")
-    def replace_generated_resources(self, task_summaries: dict):
+    def replace_generated_resources(self, task_summaries: list):
         logger.info("Replacing generated resources")
         generated_resources = {
             k: parse_task_id(v) for k, v in self.args.items() if GENERATED_TOKEN in v
@@ -67,18 +67,9 @@ class Tasks(BaseModel):
     def __len__(self):
         return len(self.__root__)
 
-    def append(self, task: Task):
-        self.__root__.append(task)
-
-    def remove(self, task: Task):
-        self.__root__.remove(task)
-
-    def extend(self, tasks: list[Task]):
-        self.__root__.extend(tasks)
-
 
 @wrap_exceptions(TaskParsingException, "Failed to parse tasks")
-def parse_tasks(tasks_str):
+def parse_tasks(tasks_str) -> list[Task]:
     if tasks_str == "[]":
         raise ValueError("Task string empty, cannot parse")
     logger.info(f"Parsing tasks string: {tasks_str}")
@@ -86,7 +77,7 @@ def parse_tasks(tasks_str):
     tasks_str = tasks_str.strip()
     # TODO Replace by PydanticOutputParser once fix list parsing
     tasks = Tasks.parse_raw(tasks_str)
-    tasks = unfold(tasks)
+    tasks = unfold(tasks.__root__)
     tasks = fix_dep(tasks)
     logger.info(f"Parsed tasks: {tasks}")
     return tasks
@@ -102,7 +93,7 @@ def parse_task_id(resource_str):
 
 # TODO Does this really remove all generated dependencies, and use the GENERATED tag ids instead?
 # TODO Refactor
-def fix_dep(tasks: Tasks):
+def fix_dep(tasks: list[Task]) -> list[Task]:
     for task in tasks:
         args = task.args
         task.dep = []
@@ -116,7 +107,7 @@ def fix_dep(tasks: Tasks):
     return tasks
 
 
-def unfold(tasks: Tasks):
+def unfold(tasks: list[Task]) -> list[Task]:
     """Split tasks that have several generated resources folded into a single argument"""
     folded_tasks = (t for t in tasks if is_folded(t))
     split_tasks = (split(t) for t in folded_tasks)

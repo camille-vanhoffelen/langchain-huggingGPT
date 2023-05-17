@@ -7,13 +7,13 @@ from langchain.prompts import load_prompt
 from hugginggpt.exceptions import TaskPlanningException, wrap_exceptions
 from hugginggpt.history import ConversationHistory
 from hugginggpt.resources import get_prompt_resource
-from hugginggpt.task_parsing import parse_tasks
+from hugginggpt.task_parsing import parse_tasks, Task
 
 logger = logging.getLogger(__name__)
 
 
 @wrap_exceptions(TaskPlanningException, "Failed to plan tasks")
-def plan_tasks(user_input: str, history: ConversationHistory, llm: BaseLLM):
+def plan_tasks(user_input: str, history: ConversationHistory, llm: BaseLLM) -> list[Task]:
     logger.info("Starting task planning")
     task_planning_prompt_template = load_prompt(
         get_prompt_resource("task-planning-prompt.json")
