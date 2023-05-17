@@ -92,16 +92,16 @@ def _compute(
         )
     )
 
-    task_summaries = {}
+    task_summaries = []
     for task in tasks:
         logger.info(f"Starting task: {task}")
         if task.depends_on_generated_resources():
             task = task.replace_generated_resources(task_summaries=task_summaries)
         model = hf_models[task.id]
         inference_result = infer(task=task, model_id=model.id)
-        task_summaries[task.id] = TaskSummary(
+        task_summaries.append(TaskSummary(
             task=task, model=model, inference_result=json.dumps(inference_result)
-        )
+        ))
         logger.info(f"Finished task: {task}")
     logger.info("Finished all tasks")
     logger.debug(f"Task summaries: {task_summaries}")

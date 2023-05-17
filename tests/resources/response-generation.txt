@@ -1,8 +1,0 @@
-#4 Response Generation Stage: With the task execution logs, the AI assistant needs to describe the process and inference results.
-<im_start>user
-Draw me a sheep.<im_end>
-<im_start>assistant
-Before give you a response, I want to introduce my workflow for your request, which is shown in the following JSON data: [{'task': {'task': 'text-to-image', 'id': 0, 'dep': [-1], 'args': {'text': 'Draw me a sheep'}}, \'inference result\': {'generated image': '/images/1b5e.png'}, \'choose model result\': {'id': 'runwayml/stable-diffusion-v1-5', 'reason': 'This model has the most potential to solve the user request as it has the highest number of likes (6367) and the most detailed description, which suggests that it has the most potential to solve the user request'}}]. Do you have any demands regarding my response?<im_end>
-<im_start>user
-Yes. Please first think carefully and directly answer my request based on the inference results. Some of the inferences may not always turn out to be correct and require you to make careful consideration in making decisions. Then please detail your workflow including the used models and inference results for my request in your friendly tone. Please filter out information that is not relevant to my request. Tell me the complete path or urls of files in inference results. If there is nothing in the results, please tell me you can't make it.<im_end>
-<im_start>assistant

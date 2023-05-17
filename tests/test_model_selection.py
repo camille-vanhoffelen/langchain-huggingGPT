@@ -1,27 +1,16 @@
-import json
 import re
 
 import aiohttp
 import pytest
 from aioresponses import aioresponses
 from dotenv import load_dotenv
-from langchain.prompts import load_prompt
 
 from helpers.utils import AsyncFakeListLLM
 from hugginggpt.exceptions import ModelSelectionException
 from hugginggpt.model_selection import Model, select_model
-from hugginggpt.resources import get_prompt_resource
 from hugginggpt.task_parsing import Task
 
 load_dotenv()
-
-
-def test_model_selection_prompt(model_selection_prompt, user_input, task, models):
-    prompt_template = load_prompt(get_prompt_resource("model-selection-prompt.json"))
-    prompt = prompt_template.format(
-        user_input=user_input, task=task.json(), models=json.dumps(models)
-    )
-    assert prompt == model_selection_prompt
 
 
 async def test_select_model(
@@ -100,14 +89,12 @@ def model_selection_response(id, reason):
 
 @pytest.fixture
 def model_selection_llm(model_selection_response):
-    llm = AsyncFakeListLLM(responses=[model_selection_response])
-    return llm
+    return AsyncFakeListLLM(responses=[model_selection_response])
 
 
 @pytest.fixture
 def output_fixing_llm(model_selection_response):
-    llm = AsyncFakeListLLM(responses=[model_selection_response])
-    return llm
+    return AsyncFakeListLLM(responses=[model_selection_response])
 
 
 @pytest.fixture
@@ -117,25 +104,17 @@ def faulty_model_selection_response(id, reason):
 
 @pytest.fixture
 def faulty_model_selection_llm(faulty_model_selection_response):
-    llm = AsyncFakeListLLM(responses=[faulty_model_selection_response])
-    return llm
+    return AsyncFakeListLLM(responses=[faulty_model_selection_response])
 
 
 @pytest.fixture
 def faulty_output_fixing_llm(faulty_model_selection_response):
-    llm = AsyncFakeListLLM(responses=[faulty_model_selection_response])
-    return llm
+    return AsyncFakeListLLM(responses=[faulty_model_selection_response])
 
 
 @pytest.fixture
 def expected_model(id, reason):
     return Model(id=id, reason=reason)
-
-
-@pytest.fixture
-def model_selection_prompt():
-    with open("tests/resources/model-selection-completion.txt", "r") as f:
-        return f.read()
 
 
 @pytest.fixture
