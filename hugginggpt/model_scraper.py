@@ -1,12 +1,12 @@
 import asyncio
 import json
 import logging
-import os
 from collections import defaultdict
 
 from aiohttp import ClientSession
 
 from hugginggpt.exceptions import ModelScrapingException, wrap_exceptions
+from hugginggpt.huggingface_api import HUGGINGFACE_HEADERS
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +20,7 @@ def read_huggingface_models_metadata():
     return models_map
 
 
-# TODO place somewhere else
 HUGGINGFACE_MODELS_MAP = read_huggingface_models_metadata()
-HUGGINGFACEHUB_API_TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN")
-HUGGINGFACE_HEADERS = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
 
 
 @wrap_exceptions(ModelScrapingException, "Failed to find compatible models")

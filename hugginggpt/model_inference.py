@@ -1,20 +1,22 @@
 import base64
 import json
 import logging
-import os
 import random
 from io import BytesIO
 from typing import Any
 
 import requests
 from PIL import Image, ImageDraw
-from dotenv import load_dotenv
-from langchain import LLMChain, OpenAI
+from langchain import LLMChain
+from langchain.llms.base import BaseLLM
 from langchain.prompts import load_prompt
 from pydantic import BaseModel, Json
 
 from hugginggpt.exceptions import ModelInferenceException, wrap_exceptions
-from hugginggpt.model_factory import TEXT_DAVINCI_003
+from hugginggpt.huggingface_api import (
+    HUGGINGFACE_HEADERS,
+    HUGGINGFACE_INFERENCE_API_URL,
+)
 from hugginggpt.model_selection import Model
 from hugginggpt.resources import (
     audio_from_bytes,
@@ -30,28 +32,21 @@ from hugginggpt.resources import (
 from hugginggpt.task_parsing import Task
 
 logger = logging.getLogger(__name__)
-load_dotenv()
-
-HUGGINGFACE_TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN")
-HUGGINGFACE_HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
-HUGGINGFACE_INFERENCE_API_URL = "https://api-inference.huggingface.co/models/"
 
 
 @wrap_exceptions(ModelInferenceException, "Error during model inference")
-def infer(task: Task, model_id: str):
+def infer(task: Task, model_id: str, llm: BaseLLM):
     if model_id == "openai":
-        return infer_openai(task)
+        return infer_openai(task, llm)
     else:
         return infer_huggingface(task, model_id)
 
 
-def infer_openai(task: Task):
+def infer_openai(task: Task, llm: BaseLLM):
     logger.info("Starting OpenAI inference")
     prompt_template = load_prompt(
         get_prompt_resource("openai-model-inference-prompt.json")
     )
-    # TODO instantiate LLM somewhere else
-    llm = OpenAI(model_name=TEXT_DAVINCI_003, temperature=0)
     llm_chain = LLMChain(prompt=prompt_template, llm=llm)
     # Need to replace double quotes with single quotes for correct response generation
     output = llm_chain.predict(

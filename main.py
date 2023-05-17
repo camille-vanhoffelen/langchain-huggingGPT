@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from hugginggpt import generate_response, infer, plan_tasks
 from hugginggpt.history import ConversationHistory
 from hugginggpt.log import setup_logging
-from hugginggpt.model_factory import LLMs, MODEL_CHOICES, TEXT_DAVINCI_003, create_llms
+from hugginggpt.llm_factory import LLMs, create_llms
 from hugginggpt.model_inference import TaskSummary
 from hugginggpt.model_selection import select_hf_models
 
@@ -18,28 +18,20 @@ logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option(
-    "-l",
-    "--llm",
-    "llm_type",
-    type=click.Choice(MODEL_CHOICES, case_sensitive=False),
-    default=TEXT_DAVINCI_003,
-    help="Large language model to use as main conversational agent",
-)
 @click.option("-p", "--prompt", type=str, help="Prompt for huggingGPT")
-def main(prompt, llm_type):
+def main(prompt):
     _print_banner()
-    models = create_llms(llm_type=llm_type)
+    llms = create_llms()
     if prompt:
-        standalone_mode(user_input=prompt, models=models)
+        standalone_mode(user_input=prompt, llms=llms)
 
     else:  # interactive mode
-        interactive_mode(models=models)
+        interactive_mode(llms=llms)
 
 
-def standalone_mode(user_input: str, models: LLMs):
+def standalone_mode(user_input: str, llms: LLMs):
     try:
-        response = _compute(user_input=user_input, models=models)
+        response = _compute(user_input=user_input, llms=llms)
         print(response.strip())
         return response
     except Exception as e:
@@ -49,7 +41,7 @@ def standalone_mode(user_input: str, models: LLMs):
         )
 
 
-def interactive_mode(models: LLMs):
+def interactive_mode(llms: LLMs):
     print("Please enter your request. End the conversation with 'exit'")
     history = ConversationHistory()
     while True:
@@ -59,7 +51,7 @@ def interactive_mode(models: LLMs):
                 break
 
             logger.info(f"User input: {user_input}")
-            response = _compute(user_input=user_input, history=history, models=models)
+            response = _compute(user_input=user_input, history=history, llms=llms)
             print(f"Assistant:{response}")
 
             history.add(role="user", content=user_input)
@@ -72,14 +64,12 @@ def interactive_mode(models: LLMs):
 
 
 def _compute(
-    user_input: str, models: LLMs, history: ConversationHistory | None = None
+    user_input: str, llms: LLMs, history: ConversationHistory | None = None
 ) -> str:
     tasks = plan_tasks(
-        user_input=user_input, history=history, llm=models.task_planning_llm
+        user_input=user_input, history=history, llm=llms.task_planning_llm
     )
 
-    # TODO find way of parallelising tasks if possible
-    # TODO in the meantime, sort tasks by dependency and execute sequentially
     sorted(tasks, key=lambda t: max(t.dep))
     logger.info(f"Sorted tasks: {tasks}")
 
@@ -87,8 +77,8 @@ def _compute(
         select_hf_models(
             user_input=user_input,
             tasks=tasks,
-            model_selection_llm=models.model_selection_llm,
-            output_fixing_llm=models.output_fixing_llm,
+            model_selection_llm=llms.model_selection_llm,
+            output_fixing_llm=llms.output_fixing_llm,
         )
     )
 
@@ -98,7 +88,7 @@ def _compute(
         if task.depends_on_generated_resources():
             task = task.replace_generated_resources(task_summaries=task_summaries)
         model = hf_models[task.id]
-        inference_result = infer(task=task, model_id=model.id)
+        inference_result = infer(task=task, model_id=model.id, llm=llms.model_inference_llm)
         task_summaries.append(TaskSummary(
             task=task, model=model, inference_result=json.dumps(inference_result)
         ))
@@ -109,7 +99,7 @@ def _compute(
     response = generate_response(
         user_input=user_input,
         task_summaries=task_summaries,
-        llm=models.response_generation_llm,
+        llm=llms.response_generation_llm,
     )
     return response
 
