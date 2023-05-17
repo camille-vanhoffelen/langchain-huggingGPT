@@ -23,6 +23,17 @@ def test_parse_bad_tasks(bad_tasks_str):
         parse_tasks(bad_tasks_str)
 
 
+def test_folded_tasks(folded_tasks_str):
+    tasks = parse_tasks(folded_tasks_str)
+    assert len(tasks) == 2
+    deps = [t.dep for t in tasks]
+    assert [0] in deps
+    assert [1] in deps
+    arg_values = [v for t in tasks for v in t.args.values()]
+    assert GENERATED_TOKEN + "-0" in arg_values
+    assert GENERATED_TOKEN + "-1" in arg_values
+
+
 def test_does_not_depend_on_generated_resources(task):
     assert not task.depends_on_generated_resources()
 
@@ -58,6 +69,11 @@ def bad_tasks_str():
 
 
 @pytest.fixture
+def folded_tasks_str():
+    return '[{"task": "image-to-text", "id": 2, "dep": [0, 1], "args": {"image": "<GENERATED>-0, <GENERATED>-1" }}]'
+
+
+@pytest.fixture
 def task():
     return Task(task="text-to-image", id=0, dep=[-1], args={"text": "Draw me a sheep."})
 
@@ -84,4 +100,8 @@ def inference_result():
 
 @pytest.fixture
 def task_summaries(dependent_task, inference_result, model):
-    return {0: TaskSummary(task=dependent_task, inference_result=inference_result, model=model)}
+    return {
+        0: TaskSummary(
+            task=dependent_task, inference_result=inference_result, model=model
+        )
+    }

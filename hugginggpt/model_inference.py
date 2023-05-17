@@ -319,12 +319,7 @@ class ImageToText:
         return encode_image(self.task.args["image"])
 
     def parse_response(self, response):
-        if "generated_text" in response.json()[0]:
-            # TODO why pop here?
-            text = response.json()[0].pop("generated_text")
-            return {"generated text": text}
-        else:
-            return {}
+        return {"generated text": response.json()[0].get("generated_text", "")}
 
 
 # Audio Tasks

@@ -81,7 +81,6 @@ async def select_model(
         )
         logger.debug(f"Model selection raw output: {output}")
 
-        # TODO use apredict_and_parse instead above
         parser = PydanticOutputParser(pydantic_object=Model)
         fixing_parser = OutputFixingParser.from_llm(
             parser=parser, llm=output_fixing_llm

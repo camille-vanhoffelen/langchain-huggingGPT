@@ -35,7 +35,6 @@ def create_llms():
     task_parsing_highlight_ids = get_token_ids_for_task_parsing(encoding)
     choose_model_highlight_ids = get_token_ids_for_choose_model(encoding)
 
-    # TODO does this instantiation slow things down? Can I reuse the same LLM?
     task_planning_llm = OpenAI(
         model_name=LLM_NAME,
         temperature=0,

@@ -36,7 +36,6 @@ class Task(BaseModel):
             f"Resources to replace, resource type -> task id: {generated_resources}"
         )
         for resource_type, task_id in generated_resources.items():
-            # TODO replace the perfect vs partial match by partial match only
             matches = [
                 v
                 for k, v in task_summaries[task_id].inference_result.items()
@@ -68,6 +67,15 @@ class Tasks(BaseModel):
     def __len__(self):
         return len(self.__root__)
 
+    def append(self, task: Task):
+        self.__root__.append(task)
+
+    def remove(self, task: Task):
+        self.__root__.remove(task)
+
+    def extend(self, tasks: list[Task]):
+        self.__root__.extend(tasks)
+
 
 @wrap_exceptions(TaskParsingException, "Failed to parse tasks")
 def parse_tasks(tasks_str):
@@ -94,7 +102,7 @@ def parse_task_id(resource_str):
 
 # TODO Does this really remove all generated dependencies, and use the GENERATED tag ids instead?
 # TODO Refactor
-def fix_dep(tasks):
+def fix_dep(tasks: Tasks):
     for task in tasks:
         args = task.args
         task.dep = []
@@ -108,24 +116,33 @@ def fix_dep(tasks):
     return tasks
 
 
-# TODO refactor
-def unfold(tasks):
-    flag_unfold_task = False
-    try:
-        for task in tasks:
-            for key, value in task.args.items():
-                if "<GENERATED>" in value:
-                    generated_items = value.split(",")
-                    if len(generated_items) > 1:
-                        flag_unfold_task = True
-                        for item in generated_items:
-                            new_task = copy.deepcopy(task)
-                            dep_task_id = int(item.split("-")[1])
-                            new_task["dep"] = [dep_task_id]
-                            new_task["args"][key] = item
-                            tasks.append(new_task)
-                        tasks.remove(task)
-    except Exception:
-        print("Unfold task failed.")
-        raise
-    return tasks
+def unfold(tasks: Tasks):
+    """Split tasks that have several generated resources folded into a single argument"""
+    folded_tasks = (t for t in tasks if is_folded(t))
+    split_tasks = (split(t) for t in folded_tasks)
+    unfolded_tasks = [t for t in tasks if not is_folded(t)]
+    # flatten
+    split_tasks = [t for split_task in split_tasks for t in split_task]
+    unfolded_tasks.extend(split_tasks)
+    return unfolded_tasks
+
+
+def split(task: Task):
+    for key, value in task.args.items():
+        if value.count(GENERATED_TOKEN) > 1:
+            logger.debug(f"Unfolding task {task.id}")
+            generated_items = value.split(",")
+            for item in generated_items:
+                new_task = copy.deepcopy(task)
+                dep_task_id = int(item.split("-")[1])
+                new_task.dep = [dep_task_id]
+                new_task.args[key] = item.strip()
+                yield new_task
+
+
+def is_folded(task: Task) -> bool:
+    for key, value in task.args.items():
+        if value.count(GENERATED_TOKEN) > 1:
+            logger.debug(f"Task {task.id} is folded")
+            return True
+    return False
