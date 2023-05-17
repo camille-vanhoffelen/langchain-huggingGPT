@@ -5,14 +5,13 @@ import aiohttp
 import pytest
 from aioresponses import aioresponses
 from dotenv import load_dotenv
-from langchain.llms.fake import FakeListLLM
 from langchain.prompts import load_prompt
 
+from helpers.utils import AsyncFakeListLLM
 from hugginggpt.exceptions import ModelSelectionException
 from hugginggpt.model_selection import Model, select_model
 from hugginggpt.resources import get_prompt_resource
 from hugginggpt.task_parsing import Task
-from hugginggpt.model_factory import AsyncFakeListLLM
 
 load_dotenv()
 

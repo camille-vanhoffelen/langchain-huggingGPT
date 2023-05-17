@@ -17,6 +17,7 @@ hugginggpt = "python main.py"
 [tool.pytest]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+norecursedirs = "tests/helpers"
 
 [project]
 name = "langchain-huggingGPT"
