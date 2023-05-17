@@ -25,6 +25,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "aioresponses"
+version = "0.7.4"
+summary = "Mock out requests made by ClientSession from aiohttp package"
+dependencies = [
+    "aiohttp<4.0.0,>=2.0.0",
+]
+
+[[package]]
 name = "aiosignal"
 version = "1.3.1"
 requires_python = ">=3.7"
@@ -324,6 +332,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pytest-asyncio"
+version = "0.21.0"
+requires_python = ">=3.7"
+summary = "Pytest support for asyncio"
+dependencies = [
+    "pytest>=7.0.0",
+]
+
+[[package]]
 name = "pytest-cov"
 version = "4.0.0"
 requires_python = ">=3.6"
@@ -442,8 +459,9 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.2"
+cross_platform = true
 groups = ["default", "dev", "ide", "test"]
-content_hash = "sha256:d7c778423e2628f312b2bf7cc2505e4ab2c274c8f68ac55b929a14578a1e1d84"
+content_hash = "sha256:a84c64029c8da994fd06b1beb1997bb8280b72c16e6547ff54a9bdad66079379"
 
 [metadata.files]
 "aiodns 3.0.0" = [
@@ -538,6 +556,10 @@ content_hash = "sha256:d7c778423e2628f312b2bf7cc2505e4ab2c274c8f68ac55b929a14578
     {url = "https://files.pythonhosted.org/packages/ed/a2/48800f019182f280fda78d8d5d5f964a0d41a2eaabfd2868d8eed0baefae/aiohttp-3.8.4-cp37-cp37m-win32.whl", hash = "sha256:aeb29c84bb53a84b1a81c6c09d24cf33bb8432cc5c39979021cc0f98c1292a1a"},
     {url = "https://files.pythonhosted.org/packages/f0/56/8b005d90ba0f40d0076978d30b20922440afdc4964b50a7429a0e2024d56/aiohttp-3.8.4-cp38-cp38-win32.whl", hash = "sha256:33587f26dcee66efb2fff3c177547bd0449ab7edf1b73a7f5dea1e38609a0c54"},
     {url = "https://files.pythonhosted.org/packages/fc/51/962b938a296eaf08d1cfa80ad5d42670b15aa868f897c0e71ea1cf9d1f0e/aiohttp-3.8.4-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3f43255086fe25e36fd5ed8f2ee47477408a73ef00e804cb2b5cba4bf2ac7f5e"},
+]
+"aioresponses 0.7.4" = [
+    {url = "https://files.pythonhosted.org/packages/41/bd/0bd5c0547f2bf23a9260e12aaf363a40191eadecb44ef1bc5e926fb2942c/aioresponses-0.7.4-py2.py3-none-any.whl", hash = "sha256:1160486b5ea96fcae6170cf2bdef029b9d3a283b7dbeabb3d7f1182769bfb6b7"},
+    {url = "https://files.pythonhosted.org/packages/7e/71/5524889790f7fc9385d8d71a92b5b4a927c652be0a216d89a217a07f5239/aioresponses-0.7.4.tar.gz", hash = "sha256:9b8c108b36354c04633bad0ea752b55d956a7602fe3e3234b939fc44af96f1d8"},
 ]
 "aiosignal 1.3.1" = [
     {url = "https://files.pythonhosted.org/packages/76/ac/a7305707cb852b7e16ff80eaf5692309bde30e2b1100a1fcacdc8f731d97/aiosignal-1.3.1-py3-none-any.whl", hash = "sha256:f8376fb07dd1e86a584e4fcdec80b36b7f81aac666ebc724e2c090300dd83b17"},
@@ -1270,6 +1292,10 @@ content_hash = "sha256:d7c778423e2628f312b2bf7cc2505e4ab2c274c8f68ac55b929a14578
 "pytest 7.3.1" = [
     {url = "https://files.pythonhosted.org/packages/1b/d1/72df649a705af1e3a09ffe14b0c7d3be1fd730da6b98beb4a2ed26b8a023/pytest-7.3.1-py3-none-any.whl", hash = "sha256:3799fa815351fea3a5e96ac7e503a96fa51cc9942c3753cda7651b93c1cfa362"},
     {url = "https://files.pythonhosted.org/packages/ec/d9/36b65598f3d19d0a14d13dc87ad5fa42869ae53bb7471f619a30eaabc4bf/pytest-7.3.1.tar.gz", hash = "sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3"},
+]
+"pytest-asyncio 0.21.0" = [
+    {url = "https://files.pythonhosted.org/packages/66/73/817ddb37c627338ecbb96486c03fe69a19bef72de1b6bd641aa06fed13f4/pytest_asyncio-0.21.0-py3-none-any.whl", hash = "sha256:f2b3366b7cd501a4056858bd39349d5af19742aed2d81660b7998b6341c7eb9c"},
+    {url = "https://files.pythonhosted.org/packages/85/c7/9db0c6215f12f26b590c24acc96d048e03989315f198454540dff95109cd/pytest-asyncio-0.21.0.tar.gz", hash = "sha256:2b38a496aef56f56b0e87557ec313e11e1ab9276fc3863f6a7be0f1d0e415e1b"},
 ]
 "pytest-cov 4.0.0" = [
     {url = "https://files.pythonhosted.org/packages/ea/70/da97fd5f6270c7d2ce07559a19e5bf36a76f0af21500256f005a69d9beba/pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},

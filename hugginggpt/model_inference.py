@@ -4,17 +4,29 @@ import logging
 import os
 import random
 from io import BytesIO
+from typing import Any
 
 import requests
 from PIL import Image, ImageDraw
 from dotenv import load_dotenv
 from langchain import LLMChain, OpenAI
 from langchain.prompts import load_prompt
+from pydantic import BaseModel, Json
 
 from hugginggpt.exceptions import ModelInferenceException, wrap_exceptions
 from hugginggpt.model_factory import TEXT_DAVINCI_003
-from hugginggpt.resources import audio_from_bytes, encode_audio, encode_image, get_prompt_resource, get_resource_url, \
-    image_from_bytes, load_image, save_audio, save_image
+from hugginggpt.model_selection import Model
+from hugginggpt.resources import (
+    audio_from_bytes,
+    encode_audio,
+    encode_image,
+    get_prompt_resource,
+    get_resource_url,
+    image_from_bytes,
+    load_image,
+    save_audio,
+    save_image,
+)
 from hugginggpt.task_parsing import Task
 
 logger = logging.getLogger(__name__)
@@ -64,6 +76,7 @@ def infer_huggingface(task: Task, model_id: str):
 
 # NLP Tasks
 
+
 # deepset/roberta-base-squad2 was removed from huggingface_models-metadata.jsonl because it is currently broken
 # Example added to task-planning-examples.json compared to original paper
 class QuestionAnswering:
@@ -75,7 +88,9 @@ class QuestionAnswering:
         data = {
             "inputs": {
                 "question": self.task.args["question"],
-                "context": self.task.args["context"] if "context" in self.task.args else "",
+                "context": self.task.args["context"]
+                if "context" in self.task.args
+                else "",
             }
         }
         return json.dumps(data)
@@ -219,7 +234,7 @@ class ImageSegmentation:
         image_name = save_image(image)
         return {
             "generated image with segmentation mask": f"/images/{image_name}.png",
-            "predicted": predicted_results
+            "predicted": predicted_results,
         }
 
 
@@ -398,3 +413,9 @@ def create_huggingface_task(task: Task):
         return HUGGINGFACE_TASKS[task.task](task)
     else:
         raise NotImplementedError(f"Task {task.task} not supported")
+
+
+class TaskSummary(BaseModel):
+    task: Task
+    inference_result: Json[Any]
+    model: Model

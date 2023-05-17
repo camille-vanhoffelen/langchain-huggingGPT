@@ -6,7 +6,6 @@ from langchain.prompts import load_prompt
 
 from hugginggpt.exceptions import ResponseGenerationException, wrap_exceptions
 from hugginggpt.resources import get_prompt_resource
-from hugginggpt.task_parsing import TaskSummary
 
 logger = logging.getLogger(__name__)
 

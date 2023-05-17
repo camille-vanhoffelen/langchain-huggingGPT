@@ -1,15 +1,16 @@
+import asyncio
 import json
 import logging
 
 import click
 from dotenv import load_dotenv
 
-from hugginggpt import generate_response, infer, plan_tasks, select_model
+from hugginggpt import generate_response, infer, plan_tasks
 from hugginggpt.history import ConversationHistory
 from hugginggpt.log import setup_logging
 from hugginggpt.model_factory import LLMs, MODEL_CHOICES, TEXT_DAVINCI_003, create_llms
-from hugginggpt.model_scraper import get_top_k_models
-from hugginggpt.task_parsing import TaskSummary
+from hugginggpt.model_inference import TaskSummary
+from hugginggpt.model_selection import select_hf_models
 
 load_dotenv()
 setup_logging()
@@ -70,7 +71,9 @@ def interactive_mode(models: LLMs):
             )
 
 
-def _compute(user_input: str, models: LLMs, history: ConversationHistory | None = None) -> str:
+def _compute(
+    user_input: str, models: LLMs, history: ConversationHistory | None = None
+) -> str:
     tasks = plan_tasks(
         user_input=user_input, history=history, llm=models.task_planning_llm
     )
@@ -80,21 +83,21 @@ def _compute(user_input: str, models: LLMs, history: ConversationHistory | None 
     sorted(tasks, key=lambda t: max(t.dep))
     logger.info(f"Sorted tasks: {tasks}")
 
+    hf_models = asyncio.run(
+        select_hf_models(
+            user_input=user_input,
+            tasks=tasks,
+            model_selection_llm=models.model_selection_llm,
+            output_fixing_llm=models.output_fixing_llm,
+        )
+    )
+
     task_summaries = {}
     for task in tasks:
         logger.info(f"Starting task: {task}")
         if task.depends_on_generated_resources():
             task = task.replace_generated_resources(task_summaries=task_summaries)
-        top_k_models = get_top_k_models(
-            task=task.task, top_k=5, max_description_length=100
-        )
-        model = select_model(
-            user_input=user_input,
-            task=task,
-            top_k_models=top_k_models,
-            model_selection_llm=models.model_selection_llm,
-            output_fixing_llm=models.output_fixing_llm
-        )
+        model = hf_models[task.id]
         inference_result = infer(task=task, model_id=model.id)
         task_summaries[task.id] = TaskSummary(
             task=task, model=model, inference_result=json.dumps(inference_result)

@@ -1,14 +1,18 @@
 import json
+import re
 
+import aiohttp
 import pytest
+from aioresponses import aioresponses
 from dotenv import load_dotenv
 from langchain.llms.fake import FakeListLLM
 from langchain.prompts import load_prompt
 
-from hugginggpt.model_selection import Model, select_model
-from hugginggpt.task_parsing import Task
-from hugginggpt.resources import get_prompt_resource
 from hugginggpt.exceptions import ModelSelectionException
+from hugginggpt.model_selection import Model, select_model
+from hugginggpt.resources import get_prompt_resource
+from hugginggpt.task_parsing import Task
+from hugginggpt.model_factory import AsyncFakeListLLM
 
 load_dotenv()
 
@@ -21,18 +25,63 @@ def test_model_selection_prompt(model_selection_prompt, user_input, task, models
     assert prompt == model_selection_prompt
 
 
-def test_select_model(user_input, task, models, model_selection_llm, output_fixing_llm, expected_model):
-    model = select_model(user_input, task, models, model_selection_llm, output_fixing_llm)
+async def test_select_model(
+    mock_aioresponse,
+    user_input,
+    task,
+    model_selection_llm,
+    output_fixing_llm,
+    expected_model,
+):
+    session = aiohttp.ClientSession()
+    task_id, model = await select_model(
+        user_input=user_input,
+        task=task,
+        model_selection_llm=model_selection_llm,
+        output_fixing_llm=output_fixing_llm,
+        session=session,
+    )
+    assert task_id == task.id
     assert model == expected_model
 
 
-def test_output_fixing(user_input, task, models, faulty_model_selection_llm, output_fixing_llm, expected_model):
-    model = select_model(user_input, task, models, faulty_model_selection_llm, output_fixing_llm)
+async def test_output_fixing(
+    mock_aioresponse,
+    user_input,
+    task,
+    faulty_model_selection_llm,
+    output_fixing_llm,
+    expected_model,
+):
+    session = aiohttp.ClientSession()
+    task_id, model = await select_model(
+        user_input=user_input,
+        task=task,
+        model_selection_llm=faulty_model_selection_llm,
+        output_fixing_llm=output_fixing_llm,
+        session=session,
+    )
+    assert task_id == task.id
     assert model == expected_model
 
-def test_faulty_output_fixing(user_input, task, models, faulty_model_selection_llm, faulty_output_fixing_llm, expected_model):
+
+async def test_faulty_output_fixing(
+    mock_aioresponse,
+    user_input,
+    task,
+    faulty_model_selection_llm,
+    faulty_output_fixing_llm,
+    expected_model,
+):
     with pytest.raises(ModelSelectionException):
-        select_model(user_input, task, models, faulty_model_selection_llm, faulty_output_fixing_llm)
+        session = aiohttp.ClientSession()
+        await select_model(
+            user_input=user_input,
+            task=task,
+            model_selection_llm=faulty_model_selection_llm,
+            output_fixing_llm=faulty_output_fixing_llm,
+            session=session,
+        )
 
 
 @pytest.fixture
@@ -52,13 +101,13 @@ def model_selection_response(id, reason):
 
 @pytest.fixture
 def model_selection_llm(model_selection_response):
-    llm = FakeListLLM(responses=[model_selection_response])
+    llm = AsyncFakeListLLM(responses=[model_selection_response])
     return llm
 
 
 @pytest.fixture
 def output_fixing_llm(model_selection_response):
-    llm = FakeListLLM(responses=[model_selection_response])
+    llm = AsyncFakeListLLM(responses=[model_selection_response])
     return llm
 
 
@@ -69,13 +118,13 @@ def faulty_model_selection_response(id, reason):
 
 @pytest.fixture
 def faulty_model_selection_llm(faulty_model_selection_response):
-    llm = FakeListLLM(responses=[faulty_model_selection_response])
+    llm = AsyncFakeListLLM(responses=[faulty_model_selection_response])
     return llm
 
 
 @pytest.fixture
 def faulty_output_fixing_llm(faulty_model_selection_response):
-    llm = FakeListLLM(responses=[faulty_model_selection_response])
+    llm = AsyncFakeListLLM(responses=[faulty_model_selection_response])
     return llm
 
 
@@ -174,3 +223,15 @@ def models():
             "tags": ["stable-diffusion", "text-to-image"],
         },
     ]
+
+
+@pytest.fixture
+def mock_aioresponse():
+    with aioresponses() as m:
+        pattern = re.compile(r"^https://api-inference\.huggingface\.co/status/.*$")
+        m.get(
+            pattern,
+            payload=dict(loaded="True"),
+            repeat=True,
+        )
+        yield m

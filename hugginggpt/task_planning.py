@@ -17,7 +17,7 @@ LLM_encoding = LLM
 
 @wrap_exceptions(TaskPlanningException, "Failed to plan tasks")
 def plan_tasks(user_input: str, history: ConversationHistory, llm):
-    logger.debug("Starting task planning")
+    logger.info("Starting task planning")
     task_planning_prompt_template = load_prompt(
         get_prompt_resource("task-planning-prompt.json")
     )

@@ -14,6 +14,19 @@ def wrap_exceptions(exception_cls, message=None):
 
     return decorated
 
+def async_wrap_exceptions(exception_cls, message=None):
+    def decorated(f):
+        @functools.wraps(f)
+        async def wrapped(*args, **kwargs):
+            try:
+                return await f(*args, **kwargs)
+            except Exception as e:
+                raise exception_cls(message) from e
+
+        return wrapped
+
+    return decorated
+
 
 class TaskPlanningException(Exception):
     pass

@@ -4,6 +4,8 @@ dev = []
 test = [
     "pytest>=7.3.0",
     "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "aioresponses>=0.7.4",
 ]
 ide = [
     "setuptools>=67.6.1",
@@ -11,6 +13,10 @@ ide = [
 
 [tool.pdm.scripts]
 hugginggpt = "python main.py"
+
+[tool.pytest]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [project]
 name = "langchain-huggingGPT"

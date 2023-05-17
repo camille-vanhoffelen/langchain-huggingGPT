@@ -3,7 +3,8 @@ import json
 import pytest
 
 from hugginggpt.model_selection import Model
-from hugginggpt.task_parsing import GENERATED_TOKEN, Task, TaskSummary, parse_tasks
+from hugginggpt.task_parsing import GENERATED_TOKEN, Task, parse_tasks
+from hugginggpt.model_inference import TaskSummary
 
 
 def test_parse_tasks(tasks_str):

@@ -1,7 +1,11 @@
 import logging
 from collections import namedtuple
+from typing import List, Optional
 
 from langchain import OpenAI
+from langchain.callbacks.manager import (
+    AsyncCallbackManagerForLLMRun,
+)
 from langchain.llms.fake import FakeListLLM
 
 from hugginggpt.get_token_ids import (
@@ -17,7 +21,13 @@ MODEL_CHOICES = [TEXT_DAVINCI_003, FAKE_LLM]
 logger = logging.getLogger(__name__)
 
 LLMs = namedtuple(
-    "LLMs", ["task_planning_llm", "model_selection_llm", "response_generation_llm", "output_fixing_llm"]
+    "LLMs",
+    [
+        "task_planning_llm",
+        "model_selection_llm",
+        "response_generation_llm",
+        "output_fixing_llm",
+    ],
 )
 
 
@@ -44,7 +54,7 @@ def create_llms(llm_type: str):
             task_planning_llm=task_planning_llm,
             model_selection_llm=model_selection_llm,
             response_generation_llm=response_generation_llm,
-            output_fixing_llm=output_fixing_llm
+            output_fixing_llm=output_fixing_llm,
         )
 
     if llm_type == FAKE_LLM:
@@ -67,5 +77,18 @@ def create_llms(llm_type: str):
             task_planning_llm=task_planning_llm,
             model_selection_llm=model_selection_llm,
             response_generation_llm=response_generation_llm,
-            output_fixing_llm=output_fixing_llm
+            output_fixing_llm=output_fixing_llm,
         )
+
+
+class AsyncFakeListLLM(FakeListLLM):
+    async def _acall(
+        self,
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+    ) -> str:
+        """First try to lookup in queries, else return 'foo' or 'bar'."""
+        response = self.responses[self.i]
+        self.i += 1
+        return response
