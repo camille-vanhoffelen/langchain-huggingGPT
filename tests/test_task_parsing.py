@@ -23,7 +23,7 @@ def test_parse_bad_tasks(bad_tasks_str):
         parse_tasks(bad_tasks_str)
 
 
-def test_folded_tasks(folded_tasks_str):
+def test_unfold_tasks(folded_tasks_str):
     tasks = parse_tasks(folded_tasks_str)
     assert len(tasks) == 2
     deps = [t.dep for t in tasks]
@@ -32,6 +32,20 @@ def test_folded_tasks(folded_tasks_str):
     arg_values = [v for t in tasks for v in t.args.values()]
     assert GENERATED_TOKEN + "-0" in arg_values
     assert GENERATED_TOKEN + "-1" in arg_values
+
+
+def test_fix_task_dependencies_when_mismatch(mismatch_dependencies_task_str):
+    tasks = parse_tasks(mismatch_dependencies_task_str)
+    assert len(tasks) == 2
+    deps = [t.dep for t in tasks]
+    assert [0] in deps
+    assert [1] in deps
+
+def test_fix_task_dependencies_when_extra(extra_dependencies_task_str):
+    tasks = parse_tasks(extra_dependencies_task_str)
+    assert len(tasks) == 1
+    task = tasks[0]
+    assert task.dep == [-1]
 
 
 def test_does_not_depend_on_generated_resources(task):
@@ -71,6 +85,16 @@ def bad_tasks_str():
 @pytest.fixture
 def folded_tasks_str():
     return '[{"task": "image-to-text", "id": 2, "dep": [0, 1], "args": {"image": "<GENERATED>-0, <GENERATED>-1" }}]'
+
+
+@pytest.fixture
+def mismatch_dependencies_task_str():
+    return '[{"task": "image-to-text", "id": 2, "dep": [2, 3], "args": {"image": "<GENERATED>-0, <GENERATED>-1" }}]'
+
+
+@pytest.fixture
+def extra_dependencies_task_str():
+    return '[{"task": "text-to-image", "id": 0, "dep": [2, 3], "args": {"text": "Draw me a sheep." }}]'
 
 
 @pytest.fixture

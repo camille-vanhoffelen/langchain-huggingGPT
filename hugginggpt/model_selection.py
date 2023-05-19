@@ -42,7 +42,6 @@ async def select_hf_models(
         return {task_id: model for task_id, model in results}
 
 
-# TODO implement extra tasks dependency parsing l.899
 @async_wrap_exceptions(ModelSelectionException, "Failed to select model")
 async def select_model(
     user_input: str,
@@ -94,4 +93,3 @@ async def select_model(
 class Model(BaseModel):
     id: str = Field(description="ID of the model")
     reason: str = Field(description="Reason for selecting this model")
-    # TODO add validation that doesn't break hacky dependency logic
