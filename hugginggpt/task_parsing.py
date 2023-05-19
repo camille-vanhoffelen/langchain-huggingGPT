@@ -39,7 +39,7 @@ class Task(BaseModel):
             matches = [
                 v
                 for k, v in task_summaries[task_id].inference_result.items()
-                if k.startswith("generated " + resource_type)
+                if self.is_matching_generated_resource(k, resource_type)
             ]
             if len(matches) == 1:
                 logger.info(
@@ -53,6 +53,15 @@ class Task(BaseModel):
                 raise Exception(
                     f"Cannot find unique required generated {resource_type} in inference result of task {task_id}"
                 )
+
+    def is_matching_generated_resource(self, arg_key: str, resource_type: str) -> bool:
+        """Returns True if arg_key contains generated resource of the correct type"""
+        # If text, then match all arg keys that contain "text"
+        if resource_type.startswith("text"):
+            return "text" in arg_key
+        # If not text, then arg key must start with "generated" and the correct resource type
+        else:
+            return arg_key.startswith("generated " + resource_type)
 
 
 class Tasks(BaseModel):

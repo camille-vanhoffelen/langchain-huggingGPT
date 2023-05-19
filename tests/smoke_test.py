@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    """This smoke test mocks all LLMs and APIs, and runs simple user request."""
     _print_banner()
     logger.info("Starting smoke test")
     user_input = "Sheep are very cute. Based on the previous fact, answer the following question: Are sheep cute?"
