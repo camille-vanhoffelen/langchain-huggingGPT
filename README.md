@@ -59,11 +59,15 @@ include example that includes multimodal task planning
 
 ### Testing
 
+TODO install test dependencies w/ pdm
+
 Run tests with pytest:
 
 ```commandline
 pytest
 ```
+
+TODO mention smoke_test.py
 
 ## Credits
 

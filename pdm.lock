@@ -381,6 +381,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "responses"
+version = "0.23.1"
+requires_python = ">=3.7"
+summary = "A utility library for mocking out the `requests` Python library."
+dependencies = [
+    "pyyaml",
+    "requests<3.0,>=2.22.0",
+    "types-PyYAML",
+    "urllib3>=1.25.10",
+]
+
+[[package]]
 name = "setuptools"
 version = "67.7.2"
 requires_python = ">=3.7"
@@ -419,6 +431,11 @@ summary = "Fast, Extensible Progress Meter"
 dependencies = [
     "colorama; platform_system == \"Windows\"",
 ]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.9"
+summary = "Typing stubs for PyYAML"
 
 [[package]]
 name = "typing-extensions"
@@ -461,7 +478,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev", "ide", "test"]
-content_hash = "sha256:a84c64029c8da994fd06b1beb1997bb8280b72c16e6547ff54a9bdad66079379"
+content_hash = "sha256:0f703de00aa55fa3ba7cb800561bb4397e18c9cdc64da65cd7a9797efae23c37"
 
 [metadata.files]
 "aiodns 3.0.0" = [
@@ -1413,6 +1430,10 @@ content_hash = "sha256:a84c64029c8da994fd06b1beb1997bb8280b72c16e6547ff54a9bdad6
     {url = "https://files.pythonhosted.org/packages/9d/ee/391076f5937f0a8cdf5e53b701ffc91753e87b07d66bae4a09aa671897bf/requests-2.28.2.tar.gz", hash = "sha256:98b1b2782e3c6c4904938b84c0eb932721069dfdb9134313beff7c83c2df24bf"},
     {url = "https://files.pythonhosted.org/packages/d2/f4/274d1dbe96b41cf4e0efb70cbced278ffd61b5c7bb70338b62af94ccb25b/requests-2.28.2-py3-none-any.whl", hash = "sha256:64299f4909223da747622c030b781c0d7811e359c37124b4bd368fb8c6518baa"},
 ]
+"responses 0.23.1" = [
+    {url = "https://files.pythonhosted.org/packages/72/6a/64c85e69c6a7b02e828ed193b2fc15e3ff6581f87501666b98feabc54809/responses-0.23.1-py3-none-any.whl", hash = "sha256:8a3a5915713483bf353b6f4079ba8b2a29029d1d1090a503c70b0dc5d9d0c7bd"},
+    {url = "https://files.pythonhosted.org/packages/fa/4f/5033bf66528c832e7fcc48e76f540bf401302c55041c7fb488b4fbaaec4a/responses-0.23.1.tar.gz", hash = "sha256:c4d9aa9fc888188f0c673eff79a8dadbe2e75b7fe879dc80a221a06e0a68138f"},
+]
 "setuptools 67.7.2" = [
     {url = "https://files.pythonhosted.org/packages/2f/8c/f336a966d4097c7cef6fc699b2ecb83b5fb63fd698198c1b5c7905a74f0f/setuptools-67.7.2-py3-none-any.whl", hash = "sha256:23aaf86b85ca52ceb801d32703f12d77517b2556af839621c641fca11287952b"},
     {url = "https://files.pythonhosted.org/packages/fd/53/e5d7ae40d03e4ed20b7cba317cf9c0c97097c8debb39f9d72d182a6578a2/setuptools-67.7.2.tar.gz", hash = "sha256:f104fa03692a2602fa0fec6c6a9e63b6c8a968de13e17c026957dd1f53d80990"},
@@ -1498,6 +1519,10 @@ content_hash = "sha256:a84c64029c8da994fd06b1beb1997bb8280b72c16e6547ff54a9bdad6
 "tqdm 4.65.0" = [
     {url = "https://files.pythonhosted.org/packages/3d/78/81191f56abb7d3d56963337dbdff6aa4f55805c8afd8bad64b0a34199e9b/tqdm-4.65.0.tar.gz", hash = "sha256:1871fb68a86b8fb3b59ca4cdd3dcccbc7e6d613eeed31f4c332531977b89beb5"},
     {url = "https://files.pythonhosted.org/packages/e6/02/a2cff6306177ae6bc73bc0665065de51dfb3b9db7373e122e2735faf0d97/tqdm-4.65.0-py3-none-any.whl", hash = "sha256:c4f53a17fe37e132815abceec022631be8ffe1b9381c2e6e30aa70edc99e9671"},
+]
+"types-pyyaml 6.0.12.9" = [
+    {url = "https://files.pythonhosted.org/packages/05/6f/f19081de5ba81864f89e354560a60637822f7d6d54d9a2a907785e9b5cc4/types-PyYAML-6.0.12.9.tar.gz", hash = "sha256:c51b1bd6d99ddf0aa2884a7a328810ebf70a4262c292195d3f4f9a0005f9eeb6"},
+    {url = "https://files.pythonhosted.org/packages/88/93/a98be346729157d9f085fd68e58fcbba823188829ac8488a9d7f12614e53/types_PyYAML-6.0.12.9-py3-none-any.whl", hash = "sha256:5aed5aa66bd2d2e158f75dda22b059570ede988559f030cf294871d3b647e3e8"},
 ]
 "typing-extensions 4.5.0" = [
     {url = "https://files.pythonhosted.org/packages/31/25/5abcd82372d3d4a3932e1fa8c3dbf9efac10cc7c0d16e78467460571b404/typing_extensions-4.5.0-py3-none-any.whl", hash = "sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4"},

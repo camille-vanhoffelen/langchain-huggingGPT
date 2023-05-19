@@ -1,28 +1,41 @@
+import re
+
 import pytest
+import responses
 from dotenv import load_dotenv
 
 from hugginggpt.model_inference import infer
+from hugginggpt.task_parsing import Task
 
 load_dotenv()
 
 
-@pytest.mark.skip(reason="huggingfacehub API not yet mocked")
-def test_infer(model_id, data, task):
-    result = infer(model_id=model_id, args=data, task=task)
-    print(result)
-    assert "generated image" in result.keys()
+def test_infer(task, model_id, mock_responses):
+    result = infer(task=task, model_id=model_id, llm=None)
+    assert result == "Yes, sheep are cute."
 
 
 @pytest.fixture
 def model_id():
-    return "runwayml/stable-diffusion-v1-5"
+    return "distilbert-base-cased-distilled-squad"
 
 
 @pytest.fixture
-def task():
-    return "text-to-image"
+def task(args):
+    return Task(task="question-answering", id=0, dep=[-1], args=args)
 
 
 @pytest.fixture
-def data():
-    return {"text": "Draw me a sheep."}
+def args():
+    return {"question": "Are sheep cute?", "context": "Sheep are very cute."}
+
+
+@pytest.fixture
+def mock_responses():
+    with responses.RequestsMock() as r:
+        pattern = re.compile(r"^https://api-inference\.huggingface\.co/models/.*$")
+        r.post(
+            pattern,
+            json="Yes, sheep are cute.",
+        )
+        yield r

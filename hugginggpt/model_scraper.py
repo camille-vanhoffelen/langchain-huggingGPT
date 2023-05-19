@@ -6,7 +6,7 @@ from collections import defaultdict
 from aiohttp import ClientSession
 
 from hugginggpt.exceptions import ModelScrapingException, wrap_exceptions
-from hugginggpt.huggingface_api import HUGGINGFACE_HEADERS
+from hugginggpt.huggingface_api import HUGGINGFACE_HEADERS, HUGGINGFACE_INFERENCE_API_STATUS_URL
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ async def filter_available_models(candidates, session: ClientSession):
 
 
 async def model_status(model_id: str, session: ClientSession) -> tuple[str, bool]:
-    url = f"https://api-inference.huggingface.co/status/{model_id}"
+    url = HUGGINGFACE_INFERENCE_API_STATUS_URL + model_id
     r = await session.get(url, headers=HUGGINGFACE_HEADERS)
     status = r.status
     json_response = await r.json()

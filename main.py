@@ -1,14 +1,16 @@
 import asyncio
 import json
 import logging
+from typing import Callable
 
+import aiohttp
 import click
 from dotenv import load_dotenv
 
 from hugginggpt import generate_response, infer, plan_tasks
 from hugginggpt.history import ConversationHistory
-from hugginggpt.log import setup_logging
 from hugginggpt.llm_factory import LLMs, create_llms
+from hugginggpt.log import setup_logging
 from hugginggpt.model_inference import TaskSummary
 from hugginggpt.model_selection import select_hf_models
 
@@ -29,10 +31,12 @@ def main(prompt):
         interactive_mode(llms=llms)
 
 
-def standalone_mode(user_input: str, llms: LLMs):
+def standalone_mode(user_input: str, llms: LLMs) -> str:
     try:
         response = _compute(
-            user_input=user_input, history=ConversationHistory(), llms=llms
+            user_input=user_input,
+            history=ConversationHistory(),
+            llms=llms,
         )
         print(response.strip())
         return response
@@ -53,7 +57,11 @@ def interactive_mode(llms: LLMs):
                 break
 
             logger.info(f"User input: {user_input}")
-            response = _compute(user_input=user_input, history=history, llms=llms)
+            response = _compute(
+                user_input=user_input,
+                history=history,
+                llms=llms,
+            )
             print(f"Assistant:{response}")
 
             history.add(role="user", content=user_input)
@@ -65,7 +73,11 @@ def interactive_mode(llms: LLMs):
             )
 
 
-def _compute(user_input: str, llms: LLMs, history: ConversationHistory) -> str:
+def _compute(
+    user_input: str,
+    history: ConversationHistory,
+    llms: LLMs,
+) -> str:
     tasks = plan_tasks(
         user_input=user_input, history=history, llm=llms.task_planning_llm
     )

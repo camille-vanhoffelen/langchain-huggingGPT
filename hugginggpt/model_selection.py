@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from hugginggpt.exceptions import ModelSelectionException, async_wrap_exceptions
 from hugginggpt.model_scraper import get_top_k_models
 from hugginggpt.resources import get_prompt_resource
-from hugginggpt.task_parsing import Task, Tasks
+from hugginggpt.task_parsing import Task
 
 logger = logging.getLogger(__name__)
 
