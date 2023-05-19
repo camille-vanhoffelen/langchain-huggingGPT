@@ -1,7 +1,6 @@
 import logging
 import re
 
-import aiohttp
 from aioresponses import aioresponses
 from responses import RequestsMock
 
@@ -15,21 +14,20 @@ logger = logging.getLogger(__name__)
 def main():
     _print_banner()
     logger.info("Starting smoke test")
-    llms = create_llms()
     user_input = "Sheep are very cute. Based on the previous fact, answer the following question: Are sheep cute?"
     print("User:")
     print(user_input)
     print("Assistant:")
+    llms = fake_llms()
     with aioresponses() as ar, RequestsMock() as r:
         mock_model_status_responses(ar)
         mock_model_inference_responses(r)
-        standalone_mode(
-            user_input=user_input, llms=llms
-        )
+        standalone_mode(user_input=user_input, llms=llms)
     logger.info("Smoke test complete")
 
 
 def mock_model_status_responses(mocked_client):
+    logger.debug("Mocking model status responses")
     pattern = re.compile(r"^https://api-inference\.huggingface\.co/status/.*$")
     mocked_client.get(
         pattern,
@@ -39,6 +37,7 @@ def mock_model_status_responses(mocked_client):
 
 
 def mock_model_inference_responses(mocked_client):
+    logger.debug("Mocking model inference responses")
     pattern = re.compile(r"^https://api-inference\.huggingface\.co/models/.*$")
     mocked_client.post(
         pattern,
@@ -46,8 +45,8 @@ def mock_model_inference_responses(mocked_client):
     )
 
 
-def create_llms():
-    logger.info(f"Creating fake LLM")
+def fake_llms():
+    logger.info(f"Creating fake LLMs")
     responses = [
         '[{"task": "question-answering", "id": 0, "dep": [-1], "args": {"question": "Are sheep cute?", "context": "Sheep are very cute."}}]'
     ]

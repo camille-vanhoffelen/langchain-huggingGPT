@@ -30,7 +30,7 @@ LLMs = namedtuple(
 
 
 def create_llms():
-    logger.info(f"Creating {LLM_NAME} LLM")
+    logger.info(f"Creating {LLM_NAME} LLMs")
 
     task_parsing_highlight_ids = get_token_ids_for_task_parsing()
     choose_model_highlight_ids = get_token_ids_for_choose_model()

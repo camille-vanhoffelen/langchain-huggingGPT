@@ -27,7 +27,7 @@ def main(prompt):
     if prompt:
         standalone_mode(user_input=prompt, llms=llms)
 
-    else:  # interactive mode
+    else:
         interactive_mode(llms=llms)
 
 

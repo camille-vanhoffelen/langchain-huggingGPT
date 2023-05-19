@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from aiohttp import ClientSession
 
-from hugginggpt.exceptions import ModelScrapingException, wrap_exceptions
+from hugginggpt.exceptions import ModelScrapingException, async_wrap_exceptions
 from hugginggpt.huggingface_api import HUGGINGFACE_HEADERS, HUGGINGFACE_INFERENCE_API_STATUS_URL
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def read_huggingface_models_metadata():
 HUGGINGFACE_MODELS_MAP = read_huggingface_models_metadata()
 
 
-@wrap_exceptions(ModelScrapingException, "Failed to find compatible models")
+@async_wrap_exceptions(ModelScrapingException, "Failed to find compatible models")
 async def get_top_k_models(
     task: str, top_k: int, max_description_length: int, session: ClientSession
 ):

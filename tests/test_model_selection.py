@@ -209,7 +209,7 @@ def mock_aioresponse():
         pattern = re.compile(r"^https://api-inference\.huggingface\.co/status/.*$")
         m.get(
             pattern,
-            payload=dict(loaded="True"),
+            payload=dict(loaded=True),
             repeat=True,
         )
         yield m
