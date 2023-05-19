@@ -14,6 +14,7 @@ def wrap_exceptions(exception_cls, message=None):
 
     return decorated
 
+
 def async_wrap_exceptions(exception_cls, message=None):
     def decorated(f):
         @functools.wraps(f)

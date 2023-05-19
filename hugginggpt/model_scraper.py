@@ -6,7 +6,10 @@ from collections import defaultdict
 from aiohttp import ClientSession
 
 from hugginggpt.exceptions import ModelScrapingException, async_wrap_exceptions
-from hugginggpt.huggingface_api import HUGGINGFACE_HEADERS, HUGGINGFACE_INFERENCE_API_STATUS_URL
+from hugginggpt.huggingface_api import (
+    HUGGINGFACE_HEADERS,
+    HUGGINGFACE_INFERENCE_API_STATUS_URL,
+)
 
 logger = logging.getLogger(__name__)
 

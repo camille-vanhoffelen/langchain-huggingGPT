@@ -1,9 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import Callable
 
-import aiohttp
 import click
 from dotenv import load_dotenv
 
