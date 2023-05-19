@@ -1,0 +1,8 @@
+{
+  "_type": "prompt",
+  "input_variables": [
+    "example_input",
+    "example_output"
+  ],
+  "template": "<im_start>user\n{example_input}<im_end>\n<im_start>assistant\n{example_output}<im_end>"
+}

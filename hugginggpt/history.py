@@ -13,3 +13,16 @@ class ConversationHistory:
 
     def __repr__(self):
         return str(self)
+
+    def __len__(self):
+        return len(self.history)
+
+    def __getitem__(self, item):
+        return self.history[item]
+
+    def __setitem__(self, key, value):
+        self.history[key] = value
+
+    def __delitem__(self, key):
+        del self.history[key]
+

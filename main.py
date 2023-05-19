@@ -31,7 +31,9 @@ def main(prompt):
 
 def standalone_mode(user_input: str, llms: LLMs):
     try:
-        response = _compute(user_input=user_input, llms=llms)
+        response = _compute(
+            user_input=user_input, history=ConversationHistory(), llms=llms
+        )
         print(response.strip())
         return response
     except Exception as e:
@@ -63,9 +65,7 @@ def interactive_mode(llms: LLMs):
             )
 
 
-def _compute(
-    user_input: str, llms: LLMs, history: ConversationHistory | None = None
-) -> str:
+def _compute(user_input: str, llms: LLMs, history: ConversationHistory) -> str:
     tasks = plan_tasks(
         user_input=user_input, history=history, llm=llms.task_planning_llm
     )
@@ -88,10 +88,14 @@ def _compute(
         if task.depends_on_generated_resources():
             task = task.replace_generated_resources(task_summaries=task_summaries)
         model = hf_models[task.id]
-        inference_result = infer(task=task, model_id=model.id, llm=llms.model_inference_llm)
-        task_summaries.append(TaskSummary(
-            task=task, model=model, inference_result=json.dumps(inference_result)
-        ))
+        inference_result = infer(
+            task=task, model_id=model.id, llm=llms.model_inference_llm
+        )
+        task_summaries.append(
+            TaskSummary(
+                task=task, model=model, inference_result=json.dumps(inference_result)
+            )
+        )
         logger.info(f"Finished task: {task}")
     logger.info("Finished all tasks")
     logger.debug(f"Task summaries: {task_summaries}")

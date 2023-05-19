@@ -1,6 +1,5 @@
 import copy
 import logging
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -128,7 +127,7 @@ def split(task: Task, folded_args: tuple[str, str]) -> list[Task]:
     return split_tasks
 
 
-def find_folded_args(task: Task) -> Optional[tuple[str, str]]:
+def find_folded_args(task: Task) -> tuple[str, str] | None:
     """Finds folded args, e.g: 'image': '<GENERATED>-1,<GENERATED>-2'"""
     for key, value in task.args.items():
         if value.count(GENERATED_TOKEN) > 1:
