@@ -35,12 +35,12 @@ logger = logging.getLogger(__name__)
 
 
 @wrap_exceptions(ModelInferenceException, "Error during model inference")
-def infer(task: Task, model_id: str, llm: BaseLLM):
+def infer(task: Task, model_id: str, llm: BaseLLM, session: requests.Session):
     """Execute a task either with LLM or huggingface inference API."""
     if model_id == "openai":
-        return infer_openai(task, llm)
+        return infer_openai(task=task, llm=llm)
     else:
-        return infer_huggingface(task, model_id)
+        return infer_huggingface(task=task, model_id=model_id, session=session)
 
 
 def infer_openai(task: Task, llm: BaseLLM):
@@ -58,12 +58,12 @@ def infer_openai(task: Task, llm: BaseLLM):
     return result
 
 
-def infer_huggingface(task: Task, model_id: str):
+def infer_huggingface(task: Task, model_id: str, session: requests.Session):
     logger.info("Starting huggingface inference")
     url = HUGGINGFACE_INFERENCE_API_URL + model_id
     huggingface_task = create_huggingface_task(task=task)
     data = huggingface_task.inference_inputs
-    response = requests.post(url, headers=HUGGINGFACE_HEADERS, data=data)
+    response = session.post(url, headers=HUGGINGFACE_HEADERS, data=data)
     response.raise_for_status()
     result = huggingface_task.parse_response(response)
     logger.debug(f"Inference result: {result}")

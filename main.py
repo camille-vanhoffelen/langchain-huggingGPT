@@ -3,6 +3,7 @@ import json
 import logging
 
 import click
+import requests
 from dotenv import load_dotenv
 
 from hugginggpt import generate_response, infer, plan_tasks
@@ -93,20 +94,26 @@ def _compute(
     )
 
     task_summaries = []
-    for task in tasks:
-        logger.info(f"Starting task: {task}")
-        if task.depends_on_generated_resources():
-            task = task.replace_generated_resources(task_summaries=task_summaries)
-        model = hf_models[task.id]
-        inference_result = infer(
-            task=task, model_id=model.id, llm=llms.model_inference_llm
-        )
-        task_summaries.append(
-            TaskSummary(
-                task=task, model=model, inference_result=json.dumps(inference_result)
+    with requests.Session() as session:
+        for task in tasks:
+            logger.info(f"Starting task: {task}")
+            if task.depends_on_generated_resources():
+                task = task.replace_generated_resources(task_summaries=task_summaries)
+            model = hf_models[task.id]
+            inference_result = infer(
+                task=task,
+                model_id=model.id,
+                llm=llms.model_inference_llm,
+                session=session,
             )
-        )
-        logger.info(f"Finished task: {task}")
+            task_summaries.append(
+                TaskSummary(
+                    task=task,
+                    model=model,
+                    inference_result=json.dumps(inference_result),
+                )
+            )
+            logger.info(f"Finished task: {task}")
     logger.info("Finished all tasks")
     logger.debug(f"Task summaries: {task_summaries}")
 

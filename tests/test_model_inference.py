@@ -1,6 +1,7 @@
 import re
 
 import pytest
+import requests
 import responses
 from dotenv import load_dotenv
 
@@ -11,8 +12,9 @@ load_dotenv()
 
 
 def test_infer(task, model_id, mock_responses):
-    result = infer(task=task, model_id=model_id, llm=None)
-    assert result == "Yes, sheep are cute."
+    with requests.Session() as session:
+        result = infer(task=task, model_id=model_id, llm=None, session=session)
+        assert result == "Yes, sheep are cute."
 
 
 @pytest.fixture
