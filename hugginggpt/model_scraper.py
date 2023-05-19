@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def read_huggingface_models_metadata():
+    """Reads the metadata of all huggingface models from the local models cache file."""
     with open("resources/huggingface-models-metadata.jsonl") as f:
         models = [json.loads(line) for line in f]
     models_map = defaultdict(list)
@@ -30,6 +31,7 @@ HUGGINGFACE_MODELS_MAP = read_huggingface_models_metadata()
 async def get_top_k_models(
     task: str, top_k: int, max_description_length: int, session: ClientSession
 ):
+    """Returns the best k available huggingface models for a given task, sorted by number of likes."""
     # Number of potential candidates changed from top 10 to top_k*2
     candidates = HUGGINGFACE_MODELS_MAP[task][: top_k * 2]
     logger.debug(f"Task: {task}; All candidate models: {[c['id'] for c in candidates]}")
@@ -58,6 +60,8 @@ async def get_top_k_models(
 
 
 async def filter_available_models(candidates, session: ClientSession):
+    """Filters out models that are not available or loaded in the huggingface inference API.
+    Runs concurrently."""
     async with asyncio.TaskGroup() as tg:
         tasks = [
             tg.create_task(model_status(model_id=c["id"], session=session))

@@ -17,12 +17,19 @@ from hugginggpt.task_parsing import Task
 logger = logging.getLogger(__name__)
 
 
+class Model(BaseModel):
+    id: str = Field(description="ID of the model")
+    reason: str = Field(description="Reason for selecting this model")
+
+
 async def select_hf_models(
     user_input: str,
     tasks: list[Task],
     model_selection_llm: BaseLLM,
     output_fixing_llm: BaseLLM,
-):
+) -> dict[int, Model]:
+    """Use LLM agent to select the best available HuggingFace model for each task, given model metadata.
+    Runs concurrently."""
     async with aiohttp.ClientSession() as session:
         async with asyncio.TaskGroup() as tg:
             aio_tasks = []
@@ -49,7 +56,7 @@ async def select_model(
     model_selection_llm: BaseLLM,
     output_fixing_llm: BaseLLM,
     session: aiohttp.ClientSession,
-):
+) -> (int, Model):
     logger.info(f"Starting model selection for task: {task.task}")
 
     top_k_models = await get_top_k_models(
@@ -88,8 +95,3 @@ async def select_model(
 
     logger.info(f"For task: {task.task}, selected model: {model}")
     return task.id, model
-
-
-class Model(BaseModel):
-    id: str = Field(description="ID of the model")
-    reason: str = Field(description="Reason for selecting this model")

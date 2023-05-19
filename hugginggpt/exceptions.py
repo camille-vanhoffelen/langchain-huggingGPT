@@ -2,6 +2,7 @@ import functools
 
 
 def wrap_exceptions(exception_cls, message=None):
+    """Wrap exceptions raised by a function with a custom exception class."""
     def decorated(f):
         @functools.wraps(f)
         def wrapped(*args, **kwargs):
@@ -16,6 +17,7 @@ def wrap_exceptions(exception_cls, message=None):
 
 
 def async_wrap_exceptions(exception_cls, message=None):
+    """Wrap exceptions raised by an async function with a custom exception class."""
     def decorated(f):
         @functools.wraps(f)
         async def wrapped(*args, **kwargs):

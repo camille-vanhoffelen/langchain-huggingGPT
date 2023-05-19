@@ -2,6 +2,7 @@ import json
 
 
 class ConversationHistory:
+    """Stores previous user and assistant messages. Used as additional context for task planning."""
     def __init__(self):
         self.history = []
 

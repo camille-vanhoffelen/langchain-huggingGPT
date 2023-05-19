@@ -11,7 +11,7 @@ GENERATED_TOKEN = "<GENERATED>"
 
 
 class Task(BaseModel):
-    # task and not name to aid prompt engineering
+    # This field is called 'task' and not 'name' to help with prompt engineering
     task: str = Field(description="Name of the Machine Learning task")
     id: int = Field(description="ID of the task")
     dep: list[int] = Field(
@@ -19,13 +19,15 @@ class Task(BaseModel):
     )
     args: dict[str, str] = Field(description="Arguments for the task")
 
-    def depends_on_generated_resources(self):
+    def depends_on_generated_resources(self) -> bool:
+        """Returns True if the task args contains <GENERATED> placeholder tokens, False otherwise"""
         return self.dep != [-1] and any(
             GENERATED_TOKEN in v for v in self.args.values()
         )
 
     @wrap_exceptions(TaskParsingException, "Failed to replace generated resources")
     def replace_generated_resources(self, task_summaries: list):
+        """Replaces <GENERATED> placeholder tokens in args with the generated resources from the task summaries"""
         logger.info("Replacing generated resources")
         generated_resources = {
             k: parse_task_id(v) for k, v in self.args.items() if GENERATED_TOKEN in v
@@ -68,6 +70,7 @@ class Tasks(BaseModel):
 
 @wrap_exceptions(TaskParsingException, "Failed to parse tasks")
 def parse_tasks(tasks_str: str) -> list[Task]:
+    """Parses tasks from task planning json string"""
     if tasks_str == "[]":
         raise ValueError("Task string empty, cannot parse")
     logger.info(f"Parsing tasks string: {tasks_str}")
@@ -82,6 +85,7 @@ def parse_tasks(tasks_str: str) -> list[Task]:
 
 
 def parse_task_id(resource_str: str) -> int:
+    """Parse task id from generated resource string, e.g. <GENERATED>-4 -> 4"""
     return int(resource_str.split("-")[1])
 
 

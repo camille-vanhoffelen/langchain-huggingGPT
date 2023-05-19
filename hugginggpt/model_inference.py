@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 @wrap_exceptions(ModelInferenceException, "Error during model inference")
 def infer(task: Task, model_id: str, llm: BaseLLM):
+    """Execute a task either with LLM or huggingface inference API."""
     if model_id == "openai":
         return infer_openai(task, llm)
     else:

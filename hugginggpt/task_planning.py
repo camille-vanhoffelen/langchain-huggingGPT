@@ -20,6 +20,7 @@ MAX_HISTORY_TOKENS = LLM_MAX_TOKENS - MAIN_PROMPT_TOKENS
 def plan_tasks(
     user_input: str, history: ConversationHistory, llm: BaseLLM
 ) -> list[Task]:
+    """Use LLM agent to plan tasks in order solve user request."""
     logger.info("Starting task planning")
     task_planning_prompt_template = load_prompt(
         get_prompt_resource("task-planning-few-shot-prompt.json")

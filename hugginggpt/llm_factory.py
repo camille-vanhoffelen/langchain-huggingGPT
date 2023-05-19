@@ -29,7 +29,8 @@ LLMs = namedtuple(
 )
 
 
-def create_llms():
+def create_llms() -> LLMs:
+    """Create various LLM agents according to the huggingGPT paper's specifications."""
     logger.info(f"Creating {LLM_NAME} LLMs")
 
     task_parsing_highlight_ids = get_token_ids_for_task_parsing()
@@ -63,19 +64,19 @@ def create_llms():
     )
 
 
-def get_token_ids_for_task_parsing():
+def get_token_ids_for_task_parsing() -> list[int]:
     text = """{"task": "text-classification",  "token-classification", "text2text-generation", "summarization", "translation",  "question-answering", "conversational", "text-generation", "sentence-similarity", "tabular-classification", "object-detection", "image-classification", "image-to-image", "image-to-text", "text-to-image", "visual-question-answering", "document-question-answering", "image-segmentation", "text-to-speech", "automatic-speech-recognition", "audio-to-audio", "audio-classification", "args", "text", "path", "dep", "id", "<GENERATED>-"}"""
     res = ENCODING.encode(text)
     res = list(set(res))
     return res
 
 
-def get_token_ids_for_choose_model():
+def get_token_ids_for_choose_model() -> list[int]:
     text = """{"id": "reason"}"""
     res = ENCODING.encode(text)
     res = list(set(res))
     return res
 
 
-def count_tokens(text: str):
+def count_tokens(text: str) -> int:
     return len(ENCODING.encode(text))
