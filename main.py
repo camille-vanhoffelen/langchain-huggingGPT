@@ -12,6 +12,7 @@ from hugginggpt.llm_factory import LLMs, create_llms
 from hugginggpt.log import setup_logging
 from hugginggpt.model_inference import TaskSummary
 from hugginggpt.model_selection import select_hf_models
+from hugginggpt.response_generation import format_response
 
 load_dotenv()
 setup_logging()
@@ -37,8 +38,9 @@ def standalone_mode(user_input: str, llms: LLMs) -> str:
             history=ConversationHistory(),
             llms=llms,
         )
-        print(response.strip())
-        return response
+        pretty_response = format_response(response)
+        print(pretty_response)
+        return pretty_response
     except Exception as e:
         logger.exception("")
         print(
@@ -61,7 +63,8 @@ def interactive_mode(llms: LLMs):
                 history=history,
                 llms=llms,
             )
-            print(f"Assistant:{response}")
+            pretty_response = format_response(response)
+            print(f"Assistant:{pretty_response}")
 
             history.add(role="user", content=user_input)
             history.add(role="assistant", content=response)

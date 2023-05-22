@@ -86,3 +86,12 @@ def save_audio(audio: AudioSegment) -> str:
     with open(f"{GENERATED_RESOURCES_DIR}/audios/{name}.flac", "wb") as f:
         audio.export(f, format="flac")
     return name
+
+
+def prepend_resource_dir(s: str) -> str:
+    """Prepend the resource dir to all resource paths in the string"""
+    for resource_type in ["images", "audios", "videos"]:
+        s = s.replace(
+            f" /{resource_type}/", f" {GENERATED_RESOURCES_DIR}/{resource_type}/"
+        )
+    return s

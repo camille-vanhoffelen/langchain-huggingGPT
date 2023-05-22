@@ -7,13 +7,15 @@ from langchain.prompts import load_prompt
 
 from hugginggpt.exceptions import ResponseGenerationException, wrap_exceptions
 from hugginggpt.model_inference import TaskSummary
-from hugginggpt.resources import get_prompt_resource
+from hugginggpt.resources import get_prompt_resource, prepend_resource_dir
 
 logger = logging.getLogger(__name__)
 
 
 @wrap_exceptions(ResponseGenerationException, "Failed to generate assistant response")
-def generate_response(user_input: str, task_summaries: list[TaskSummary], llm: BaseLLM) -> str:
+def generate_response(
+    user_input: str, task_summaries: list[TaskSummary], llm: BaseLLM
+) -> str:
     """Use LLM agent to generate a response to the user's input, given task results."""
     logger.info("Starting response generation")
     sorted_task_summaries = sorted(task_summaries, key=lambda ts: ts.task.id)
@@ -26,6 +28,13 @@ def generate_response(user_input: str, task_summaries: list[TaskSummary], llm: B
         user_input=user_input, task_results=task_results_str, stop=["<im_end>"]
     )
     logger.info(f"Generated response: {response}")
+    return response
+
+
+def format_response(response: str) -> str:
+    """Format the response to be more readable for user."""
+    response = response.strip()
+    response = prepend_resource_dir(response)
     return response
 
 
