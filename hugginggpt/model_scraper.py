@@ -6,10 +6,7 @@ from collections import defaultdict
 from aiohttp import ClientSession
 
 from hugginggpt.exceptions import ModelScrapingException, async_wrap_exceptions
-from hugginggpt.huggingface_api import (
-    HUGGINGFACE_HEADERS,
-    HUGGINGFACE_INFERENCE_API_STATUS_URL,
-)
+from hugginggpt.huggingface_api import (HUGGINGFACE_INFERENCE_API_STATUS_URL, get_hf_headers)
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +24,10 @@ def read_huggingface_models_metadata():
 HUGGINGFACE_MODELS_MAP = read_huggingface_models_metadata()
 
 
-@async_wrap_exceptions(ModelScrapingException, "Failed to find compatible models already loaded in the huggingface inference API.")
+@async_wrap_exceptions(
+    ModelScrapingException,
+    "Failed to find compatible models already loaded in the huggingface inference API.",
+)
 async def get_top_k_models(
     task: str, top_k: int, max_description_length: int, session: ClientSession
 ):
@@ -74,7 +74,8 @@ async def filter_available_models(candidates, session: ClientSession):
 
 async def model_status(model_id: str, session: ClientSession) -> tuple[str, bool]:
     url = HUGGINGFACE_INFERENCE_API_STATUS_URL + model_id
-    r = await session.get(url, headers=HUGGINGFACE_HEADERS)
+    headers = get_hf_headers()
+    r = await session.get(url, headers=headers)
     status = r.status
     json_response = await r.json()
     logger.debug(f"Model {model_id} status: {status}, response: {json_response}")

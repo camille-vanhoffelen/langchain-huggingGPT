@@ -44,9 +44,9 @@ def encode_image(image_arg: str) -> bytes:
 
 def save_image(img: Image) -> str:
     name = str(uuid.uuid4())[:4]
-    path = f"{GENERATED_RESOURCES_DIR}/images/{name}.png"
-    img.save(path)
-    return name
+    path = f"/images/{name}.png"
+    img.save(GENERATED_RESOURCES_DIR + path)
+    return path
 
 
 # Audios
@@ -83,9 +83,10 @@ def encode_audio(audio_arg: str) -> bytes:
 
 def save_audio(audio: AudioSegment) -> str:
     name = str(uuid.uuid4())[:4]
-    with open(f"{GENERATED_RESOURCES_DIR}/audios/{name}.flac", "wb") as f:
+    path = f"/audios/{name}.flac"
+    with open(GENERATED_RESOURCES_DIR + path, "wb") as f:
         audio.export(f, format="flac")
-    return name
+    return path
 
 
 def prepend_resource_dir(s: str) -> str:
@@ -95,3 +96,9 @@ def prepend_resource_dir(s: str) -> str:
             f" /{resource_type}/", f" {GENERATED_RESOURCES_DIR}/{resource_type}/"
         )
     return s
+
+
+def init_resource_dirs():
+    os.makedirs(GENERATED_RESOURCES_DIR + "/images", exist_ok=True)
+    os.makedirs(GENERATED_RESOURCES_DIR + "/audios", exist_ok=True)
+    os.makedirs(GENERATED_RESOURCES_DIR + "/videos", exist_ok=True)

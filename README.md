@@ -1,4 +1,8 @@
+
+
 # :parrot: :hugs: :robot: Langchain HuggingGPT
+
+[![Open in Spaces](https://img.shields.io/badge/%F0%9F%A4%97-Open%20in%20Spaces-blue)](https://huggingface.co/spaces/camillevanhoffelen/langchain-HuggingGPT)
 
 A lightweight implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain](https://docs.langchain.com/docs/). 
 No local inference, only models available on the [huggingface inference API](https://huggingface.co/inference-api) are used. 
@@ -23,6 +27,8 @@ cp .env.example .env
 Then fill in the `.env` file with your `OPENAI_API_KEY` & `HUGGINGFACEHUB_API_TOKEN` credentials.
 
 ## Usage
+
+### CLI
 
 ```commandline
 python main.py
@@ -52,6 +58,17 @@ To use the application in standalone mode, use the `--prompt` flag:
 ```commandline
 python main.py --prompt "Draw me a sheep"
 ```
+
+### Local Gradio
+
+<img src="resources/gradio.png" alt="sheep" width="500"/>
+
+
+```commandline
+python app.py
+```
+
+Then open in your browser: [http://localhost:7860/](http://localhost:7860/)
 
 ## Examples
 
@@ -158,12 +175,6 @@ complete path or url of the audio file is /audios/499e.flac.
 User: exit
 ```
 
-## Future Work
-
-- Concurrent execution of non-dependent tasks with `asyncio`
-- Smarter validation of task planning
-- Better support for image-to-image control tasks
-
 
 ## Development
 
@@ -186,6 +197,23 @@ Run smoke test:
 ```commandline
 pdm run python tests/smoke_test.py
 ```
+
+### Implementation Notes
+
+- cleaned up most of the [JARVIS](https://github.com/microsoft/JARVIS) code
+- added unit tests
+- [langchain](https://docs.langchain.com/docs/) OpenAI API calls and prompt templates
+- asyncio model status and model selection API calls
+- added missing `sentence-similarity`, `text-classification`, `image-classification`, and `question-answering` task planning examples
+
+This implementation tries to remain as close as possible to the [original research paper](https://arxiv.org/abs/2303.17580)’s prompts and workflows. As such, the whole langchain framework was not used.
+
+### Future work
+
+- Concurrent execution of non-dependent tasks with `asyncio`
+- Better support for image-to-image control tasks
+- Switch to `gpt-3.5-turbo`
+- abandon paper reproducibility and use more of langchain (e.g [Agents](https://python.langchain.com/en/latest/modules/agents.html), [SequentialChains](https://python.langchain.com/en/latest/modules/chains/generic/sequential_chains.html), [HuggingFace Tool](https://python.langchain.com/en/latest/modules/agents/tools/examples/huggingface_tools.html), …)
 
 
 ## License

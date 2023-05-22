@@ -13,10 +13,7 @@ from langchain.prompts import load_prompt
 from pydantic import BaseModel, Json
 
 from hugginggpt.exceptions import ModelInferenceException, wrap_exceptions
-from hugginggpt.huggingface_api import (
-    HUGGINGFACE_HEADERS,
-    HUGGINGFACE_INFERENCE_API_URL,
-)
+from hugginggpt.huggingface_api import (HUGGINGFACE_INFERENCE_API_URL, get_hf_headers)
 from hugginggpt.model_selection import Model
 from hugginggpt.resources import (
     audio_from_bytes,
@@ -63,7 +60,8 @@ def infer_huggingface(task: Task, model_id: str, session: requests.Session):
     url = HUGGINGFACE_INFERENCE_API_URL + model_id
     huggingface_task = create_huggingface_task(task=task)
     data = huggingface_task.inference_inputs
-    response = session.post(url, headers=HUGGINGFACE_HEADERS, data=data)
+    headers = get_hf_headers()
+    response = session.post(url, headers=headers, data=data)
     response.raise_for_status()
     result = huggingface_task.parse_response(response)
     logger.debug(f"Inference result: {result}")
@@ -192,8 +190,8 @@ class TextToImage:
 
     def parse_response(self, response):
         image = image_from_bytes(response.content)
-        image_name = save_image(image)
-        return {"generated image": f"/images/{image_name}.png"}
+        path = save_image(image)
+        return {"generated image": path}
 
 
 class ImageSegmentation:
@@ -227,9 +225,9 @@ class ImageSegmentation:
             layer = Image.new("RGBA", mask.size, colors[i])
             image.paste(layer, (0, 0), mask)
             predicted_results.append(pred)
-        image_name = save_image(image)
+        path = save_image(image)
         return {
-            "generated image with segmentation mask": f"/images/{image_name}.png",
+            "generated image with segmentation mask": path,
             "predicted": predicted_results,
         }
 
@@ -254,8 +252,8 @@ class ImageToImage:
 
     def parse_response(self, response):
         image = image_from_bytes(response.content)
-        image_name = save_image(image)
-        return {"generated image": f"/images/{image_name}.png"}
+        path = save_image(image)
+        return {"generated image": path}
 
 
 class ObjectDetection:
@@ -291,9 +289,9 @@ class ObjectDetection:
                 item["label"],
                 fill=color_map[item["label"]],
             )
-        image_name = save_image(image)
+        path = save_image(image)
         return {
-            "generated image with predicted box": f"/images/{image_name}.png",
+            "generated image with predicted box": path,
             "predicted": response.json(),
         }
 
@@ -334,8 +332,8 @@ class TextToSpeech:
 
     def parse_response(self, response):
         audio = audio_from_bytes(response.content)
-        audio_name = save_audio(audio)
-        return {"generated audio": f"/audios/{audio_name}.flac"}
+        path = save_audio(audio)
+        return {"generated audio": path}
 
 
 class AudioToAudio:
@@ -351,8 +349,8 @@ class AudioToAudio:
         blob = result[0].items()["blob"]
         content = base64.b64decode(blob.encode("utf-8"))
         audio = audio_from_bytes(content)
-        name = save_audio(audio)
-        return {"generated audio": f"/audios/{name}.flac"}
+        path = save_audio(audio)
+        return {"generated audio": path}
 
 
 class AutomaticSpeechRecognition:

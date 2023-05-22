@@ -39,6 +39,7 @@ dependencies = [
     "pydub>=0.25.1",
     "aiohttp>=3.8.4",
     "aiodns>=3.0.0",
+    "gradio>=3.32.0",
 ]
 requires-python = ">=3.11"
 readme = "README.md"

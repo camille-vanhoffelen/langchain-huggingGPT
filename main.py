@@ -33,7 +33,7 @@ def main(prompt):
 
 def standalone_mode(user_input: str, llms: LLMs) -> str:
     try:
-        response = _compute(
+        response, task_summaries = compute(
             user_input=user_input,
             history=ConversationHistory(),
             llms=llms,
@@ -58,7 +58,7 @@ def interactive_mode(llms: LLMs):
                 break
 
             logger.info(f"User input: {user_input}")
-            response = _compute(
+            response, task_summaries = compute(
                 user_input=user_input,
                 history=history,
                 llms=llms,
@@ -75,11 +75,11 @@ def interactive_mode(llms: LLMs):
             )
 
 
-def _compute(
+def compute(
     user_input: str,
     history: ConversationHistory,
     llms: LLMs,
-) -> str:
+) -> (str, list[TaskSummary]):
     tasks = plan_tasks(
         user_input=user_input, history=history, llm=llms.task_planning_llm
     )
@@ -125,7 +125,7 @@ def _compute(
         task_summaries=task_summaries,
         llm=llms.response_generation_llm,
     )
-    return response
+    return response, task_summaries
 
 
 def _print_banner():
