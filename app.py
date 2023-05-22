@@ -52,27 +52,48 @@ class Client:
         if not self.llms:
             self.llms = create_llms()
 
-        messages = display_message(
-            role="user", message=user_input, messages=messages, save_media=True
-        )
         self.last_user_input = user_input
+        try:
+            messages = display_message(
+                role="user", message=user_input, messages=messages, save_media=True
+            )
+        except Exception as e:
+            logger.exception("")
+            error_message = f"Sorry, encountered error: {e}. Please try again. Check logs if problem persists."
+            messages = display_message(
+                role="assistant",
+                message=error_message,
+                messages=messages,
+                save_media=False,
+            )
         return "", messages
 
     def bot(self, messages):
         if not self.is_init:
             return {}, messages
-        user_input = self.last_user_input
-        response, task_summaries = compute(
-            user_input=user_input,
-            history=self.llm_history,
-            llms=self.llms,
-        )
-        messages = display_message(
-            role="assistant", message=response, messages=messages, save_media=False
-        )
-        self.llm_history.add(role="user", content=user_input)
-        self.llm_history.add(role="assistant", content="")
-        return task_summaries, messages
+        try:
+            user_input = self.last_user_input
+            response, task_summaries = compute(
+                user_input=user_input,
+                history=self.llm_history,
+                llms=self.llms,
+            )
+            messages = display_message(
+                role="assistant", message=response, messages=messages, save_media=False
+            )
+            self.llm_history.add(role="user", content=user_input)
+            self.llm_history.add(role="assistant", content="")
+            return task_summaries, messages
+        except Exception as e:
+            logger.exception("")
+            error_message = f"Sorry, encountered error: {e}. Please try again. Check logs if problem persists."
+            messages = display_message(
+                role="assistant",
+                message=error_message,
+                messages=messages,
+                save_media=False,
+            )
+            return [], messages
 
 
 css = ".json {height: 527px; overflow: scroll;} .json-holder {height: 527px; overflow: scroll;}"
@@ -161,7 +182,7 @@ with gr.Blocks(css=css) as demo:
             "Draw me a sheep",
             "Write a poem about sheep, then read it to me",
             "Transcribe the audio file found at /audios/499e.flac. Then tell me how similar the transcription is to the following sentence: Sheep are nice.",
-            "Show me a joke and an image of sheep",
+            "Tell me a joke about a sheep, then illustrate it by generating an image",
         ],
         inputs=txt,
     )
