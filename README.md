@@ -7,7 +7,15 @@
 A lightweight implementation of [HuggingGPT](https://arxiv.org/abs/2303.17580) with [langchain](https://docs.langchain.com/docs/). 
 No local inference, only models available on the [huggingface inference API](https://huggingface.co/inference-api) are used. 
 
-## Getting Started
+# ToC
+
+* [🚀 Getting Started](#-getting-started)
+* [👏 Usage](#-usage)
+* [👀 Examples](#-examples)
+* [⚙️ Development](#-development)
+* [🤔 Some Thoughts on Why langchain-huggingGPT and JARVIS Fail To Deliver](#-some-thoughts-on-why-langchain-hugginggpt-and-jarvis-fail-to-deliver)
+
+## 🚀 Getting Started
 
 Install the package with pip:
 
@@ -26,7 +34,7 @@ cp .env.example .env
 
 Then fill in the `.env` file with your `OPENAI_API_KEY` & `HUGGINGFACEHUB_API_TOKEN` credentials.
 
-## Usage
+## 👏 Usage
 
 ### CLI
 
@@ -70,7 +78,7 @@ python app.py
 
 Then open in your browser: [http://localhost:7860/](http://localhost:7860/)
 
-## Examples
+## 👀 Examples
 
 
 ### Image Generation + Image-to-Text + Object Detection + Visual Question Answering
@@ -176,7 +184,7 @@ User: exit
 ```
 
 
-## Development
+## ⚙️ Development
 
 ### Testing
 
@@ -215,7 +223,7 @@ This implementation tries to remain as close as possible to the [original resear
 - Switch to `gpt-3.5-turbo`
 - abandon paper reproducibility and use more of langchain (e.g [Agents](https://python.langchain.com/en/latest/modules/agents.html), [SequentialChains](https://python.langchain.com/en/latest/modules/chains/generic/sequential_chains.html), [HuggingFace Tool](https://python.langchain.com/en/latest/modules/agents/tools/examples/huggingface_tools.html), …)
 
-## Some Thoughts on Why langchain-huggingGPT and JARVIS Fail To Deliver
+## 🤔 Some Thoughts on Why langchain-huggingGPT and JARVIS Fail To Deliver
 
 ### HuggingGPT Comes Up Short
 
